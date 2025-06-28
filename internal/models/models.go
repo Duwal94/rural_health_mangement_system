@@ -6,17 +6,35 @@ import (
 	"gorm.io/gorm"
 )
 
+// User represents the authentication entity
+type User struct {
+	ID        uint           `json:"id" gorm:"primaryKey"`
+	Email     string         `json:"email" gorm:"not null;size:255;uniqueIndex" validate:"required,email"`
+	Password  string         `json:"-" gorm:"not null;size:255" validate:"required,min=8"`
+	UserType  string         `json:"user_type" gorm:"not null;size:20" validate:"required,oneof=patient clinic admin"`
+	IsActive  bool           `json:"is_active" gorm:"default:true"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
+
+	// Relationships
+	PatientProfile *Patient `json:"patient_profile,omitempty" gorm:"foreignKey:UserID"`
+	ClinicProfile  *Clinic  `json:"clinic_profile,omitempty" gorm:"foreignKey:UserID"`
+}
+
 type Clinic struct {
 	ID            uint           `json:"id" gorm:"primaryKey"`
 	Name          string         `json:"name" gorm:"not null;size:255" validate:"required,min=2,max=255"`
 	Address       string         `json:"address" gorm:"not null;size:500" validate:"required,min=5,max=500"`
 	ContactNumber string         `json:"contact_number" gorm:"not null;size:20" validate:"required,min=10,max=20"`
 	District      string         `json:"district" gorm:"not null;size:100" validate:"required,min=2,max=100"`
+	UserID        *uint          `json:"user_id,omitempty" gorm:"index"` // Link to User for authentication
 	CreatedAt     time.Time      `json:"created_at"`
 	UpdatedAt     time.Time      `json:"updated_at"`
 	DeletedAt     gorm.DeletedAt `json:"-" gorm:"index"`
 
 	// Relationships
+	User     *User     `json:"user,omitempty" gorm:"foreignKey:UserID"`
 	Patients []Patient `json:"patients,omitempty" gorm:"foreignKey:ClinicID"`
 	Staff    []Staff   `json:"staff,omitempty" gorm:"foreignKey:ClinicID"`
 	Visits   []Visit   `json:"visits,omitempty" gorm:"foreignKey:ClinicID"`
@@ -30,11 +48,13 @@ type Patient struct {
 	Address     string         `json:"address" gorm:"not null;size:500" validate:"required,min=5,max=500"`
 	Phone       string         `json:"phone" gorm:"not null;size:20" validate:"required,min=10,max=20"`
 	ClinicID    uint           `json:"clinic_id" gorm:"not null" validate:"required"`
+	UserID      *uint          `json:"user_id,omitempty" gorm:"index"` // Link to User for authentication
 	CreatedAt   time.Time      `json:"created_at"`
 	UpdatedAt   time.Time      `json:"updated_at"`
 	DeletedAt   gorm.DeletedAt `json:"-" gorm:"index"`
 
 	// Relationships
+	User   *User   `json:"user,omitempty" gorm:"foreignKey:UserID"`
 	Clinic *Clinic `json:"clinic,omitempty" gorm:"foreignKey:ClinicID;references:ID"`
 	Visits []Visit `json:"visits,omitempty" gorm:"foreignKey:PatientID"`
 }
@@ -165,4 +185,50 @@ type PaginationResponse struct {
 type ErrorResponse struct {
 	Error   string      `json:"error"`
 	Details interface{} `json:"details,omitempty"`
+}
+
+// Authentication DTOs
+type RegisterPatientRequest struct {
+	Email       string `json:"email" validate:"required,email"`
+	Password    string `json:"password" validate:"required,min=8"`
+	FullName    string `json:"full_name" validate:"required,min=2,max=255"`
+	Gender      string `json:"gender" validate:"required,oneof=Male Female Other"`
+	DateOfBirth string `json:"date_of_birth" validate:"required"` // Will be parsed to time.Time
+	Address     string `json:"address" validate:"required,min=5,max=500"`
+	Phone       string `json:"phone" validate:"required,min=10,max=20"`
+	ClinicID    uint   `json:"clinic_id" validate:"required"`
+}
+
+type RegisterClinicRequest struct {
+	Email         string `json:"email" validate:"required,email"`
+	Password      string `json:"password" validate:"required,min=8"`
+	Name          string `json:"name" validate:"required,min=2,max=255"`
+	Address       string `json:"address" validate:"required,min=5,max=500"`
+	ContactNumber string `json:"contact_number" validate:"required,min=10,max=20"`
+	District      string `json:"district" validate:"required,min=2,max=100"`
+}
+
+type LoginRequest struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required"`
+}
+
+type LoginResponse struct {
+	Token    string      `json:"token"`
+	UserType string      `json:"user_type"`
+	User     interface{} `json:"user"`
+}
+
+type ChangePasswordRequest struct {
+	CurrentPassword string `json:"current_password" validate:"required"`
+	NewPassword     string `json:"new_password" validate:"required,min=8"`
+}
+
+type JWTClaims struct {
+	UserID    uint   `json:"user_id"`
+	Email     string `json:"email"`
+	UserType  string `json:"user_type"`
+	PatientID *uint  `json:"patient_id,omitempty"`
+	ClinicID  *uint  `json:"clinic_id,omitempty"`
+	Exp       int64  `json:"exp"`
 }

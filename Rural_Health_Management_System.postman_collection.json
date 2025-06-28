@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "6c9bc6fa-d90e-4670-af9a-07fe769cf7ca",
 		"name": "Rural Health Management System API",
-		"description": "Complete API collection for Rural Health Management System with all CRUD operations for Clinics, Patients, Staff, Visits, Diagnoses, and Prescriptions.",
+		"description": "Complete API collection for Rural Health Management System with role-based authentication, patient and clinic portals, and full CRUD operations for healthcare management. Features JWT authentication with separate access levels for patients, clinics, and administrators.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "43644364",
 		"_collection_link": "https://interstellar-eclipse-650736.postman.co/workspace/Team-Workspace~041877b3-75c8-4076-8f7c-78a10cc1d7f6/collection/43644364-6c9bc6fa-d90e-4670-af9a-07fe769cf7ca?action=share&source=collection_link&creator=43644364"
@@ -2259,6 +2259,893 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register Patient",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"patient@example.com\",\n  \"password\": \"securePassword123\",\n  \"full_name\": \"John Doe\",\n  \"gender\": \"Male\",\n  \"date_of_birth\": \"1990-01-15\",\n  \"address\": \"123 Village Road, Rural Area\",\n  \"phone\": \"+1234567890\",\n  \"clinic_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/auth/register/patient",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"auth",
+								"register",
+								"patient"
+							]
+						},
+						"description": "Register a new patient with authentication credentials"
+					},
+					"response": [
+						{
+							"name": "Register Patient",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"patient@example.com\",\n  \"password\": \"securePassword123\",\n  \"full_name\": \"John Doe\",\n  \"gender\": \"Male\",\n  \"date_of_birth\": \"1990-01-15\",\n  \"address\": \"123 Village Road, Rural Area\",\n  \"phone\": \"+1234567890\",\n  \"clinic_id\": 1\n}"
+								},
+								"url": {
+									"raw": "{{apiUrl}}/auth/register/patient",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"auth",
+										"register",
+										"patient"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"user_type\": \"patient\",\n  \"user\": {\n    \"id\": 1,\n    \"full_name\": \"John Doe\",\n    \"gender\": \"Male\",\n    \"date_of_birth\": \"1990-01-15T00:00:00Z\",\n    \"address\": \"123 Village Road, Rural Area\",\n    \"phone\": \"+1234567890\",\n    \"clinic_id\": 1,\n    \"created_at\": \"2025-06-28T09:38:48.047385Z\",\n    \"updated_at\": \"2025-06-28T09:38:48.047385Z\",\n    \"clinic\": {\n      \"id\": 1,\n      \"name\": \"Rural Health Center\",\n      \"address\": \"456 Main Street\",\n      \"contact_number\": \"+1234567891\",\n      \"district\": \"Central District\"\n    }\n  }\n}"
+						}
+					]
+				},
+				{
+					"name": "Register Clinic",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"clinic@example.com\",\n  \"password\": \"securePassword123\",\n  \"name\": \"Rural Health Center\",\n  \"address\": \"456 Main Street, Central Village\",\n  \"contact_number\": \"+1234567891\",\n  \"district\": \"Central District\"\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/auth/register/clinic",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"auth",
+								"register",
+								"clinic"
+							]
+						},
+						"description": "Register a new clinic with authentication credentials"
+					},
+					"response": [
+						{
+							"name": "Register Clinic",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"clinic@example.com\",\n  \"password\": \"securePassword123\",\n  \"name\": \"Rural Health Center\",\n  \"address\": \"456 Main Street, Central Village\",\n  \"contact_number\": \"+1234567891\",\n  \"district\": \"Central District\"\n}"
+								},
+								"url": {
+									"raw": "{{apiUrl}}/auth/register/clinic",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"auth",
+										"register",
+										"clinic"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"user_type\": \"clinic\",\n  \"user\": {\n    \"id\": 1,\n    \"name\": \"Rural Health Center\",\n    \"address\": \"456 Main Street, Central Village\",\n    \"contact_number\": \"+1234567891\",\n    \"district\": \"Central District\",\n    \"created_at\": \"2025-06-28T09:37:07.43846Z\",\n    \"updated_at\": \"2025-06-28T09:37:07.43846Z\"\n  }\n}"
+						}
+					]
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.globals.set('authToken', response.token);",
+									"    pm.globals.set('userType', response.user_type);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"userPassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/auth/login",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Authenticate a user and receive a JWT token"
+					},
+					"response": [
+						{
+							"name": "Login Success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"userPassword123\"\n}"
+								},
+								"url": {
+									"raw": "{{apiUrl}}/auth/login",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"auth",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"user_type\": \"patient\",\n  \"user\": {\n    \"id\": 1,\n    \"full_name\": \"John Doe\",\n    \"gender\": \"Male\",\n    \"date_of_birth\": \"1990-01-15T00:00:00Z\",\n    \"address\": \"123 Village Road\",\n    \"phone\": \"+1234567890\",\n    \"clinic_id\": 1\n  }\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiUrl}}/auth/profile",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"auth",
+								"profile"
+							]
+						},
+						"description": "Get the current authenticated user's profile"
+					},
+					"response": []
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"current_password\": \"currentPassword123\",\n  \"new_password\": \"newPassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/auth/change-password",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"auth",
+								"change-password"
+							]
+						},
+						"description": "Change the current user's password"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Patient Portal",
+			"item": [
+				{
+					"name": "Get My Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiUrl}}/portal/patient/profile",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"portal",
+								"patient",
+								"profile"
+							]
+						},
+						"description": "Get the authenticated patient's profile information"
+					},
+					"response": []
+				},
+				{
+					"name": "Update My Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"full_name\": \"John Doe Updated\",\n  \"gender\": \"Male\",\n  \"address\": \"123 Updated Village Road\",\n  \"phone\": \"+1234567890\",\n  \"date_of_birth\": \"1990-01-15\"\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/portal/patient/profile",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"portal",
+								"patient",
+								"profile"
+							]
+						},
+						"description": "Update the authenticated patient's profile information"
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Visits",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiUrl}}/portal/patient/visits?page=1&per_page=10",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"portal",
+								"patient",
+								"visits"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Get all visits for the authenticated patient"
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Visit by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiUrl}}/portal/patient/visits/1",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"portal",
+								"patient",
+								"visits",
+								"1"
+							]
+						},
+						"description": "Get details of a specific visit for the authenticated patient"
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Diagnoses",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiUrl}}/portal/patient/diagnoses?page=1&per_page=10",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"portal",
+								"patient",
+								"diagnoses"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Get all diagnoses for the authenticated patient"
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Prescriptions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiUrl}}/portal/patient/prescriptions?page=1&per_page=10",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"portal",
+								"patient",
+								"prescriptions"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Get all prescriptions for the authenticated patient"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Clinic Portal",
+			"item": [
+				{
+					"name": "Get My Profile",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiUrl}}/portal/clinic/profile",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"portal",
+								"clinic",
+								"profile"
+							]
+						},
+						"description": "Get the authenticated clinic's profile information"
+					},
+					"response": []
+				},
+				{
+					"name": "Update My Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Rural Health Center\",\n  \"address\": \"456 Updated Main Street, Central Village\",\n  \"contact_number\": \"+1234567891\",\n  \"district\": \"Central District\"\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/portal/clinic/profile",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"portal",
+								"clinic",
+								"profile"
+							]
+						},
+						"description": "Update the authenticated clinic's profile information"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Dashboard Stats",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiUrl}}/portal/clinic/dashboard",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"portal",
+								"clinic",
+								"dashboard"
+							]
+						},
+						"description": "Get dashboard statistics for the authenticated clinic"
+					},
+					"response": [
+						{
+							"name": "Dashboard Stats",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{authToken}}"
+									}
+								],
+								"url": {
+									"raw": "{{apiUrl}}/portal/clinic/dashboard",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"portal",
+										"clinic",
+										"dashboard"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [],
+							"cookie": [],
+							"body": "{\n  \"total_patients\": 150,\n  \"total_staff\": 8,\n  \"total_visits\": 1250,\n  \"visits_this_month\": 85,\n  \"total_diagnoses\": 980,\n  \"total_prescriptions\": 1100\n}"
+						}
+					]
+				},
+				{
+					"name": "Get My Patients",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiUrl}}/portal/clinic/patients?page=1&per_page=10",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"portal",
+								"clinic",
+								"patients"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Get all patients for the authenticated clinic"
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Patient by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiUrl}}/portal/clinic/patients/1",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"portal",
+								"clinic",
+								"patients",
+								"1"
+							]
+						},
+						"description": "Get details of a specific patient for the authenticated clinic"
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Staff",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiUrl}}/portal/clinic/staff?page=1&per_page=10",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"portal",
+								"clinic",
+								"staff"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Get all staff members for the authenticated clinic"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Staff",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"full_name\": \"Dr. Jane Smith\",\n  \"role\": \"Doctor\",\n  \"phone\": \"+1234567900\",\n  \"email\": \"jane.smith@clinic.com\"\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/portal/clinic/staff",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"portal",
+								"clinic",
+								"staff"
+							]
+						},
+						"description": "Create a new staff member for the authenticated clinic"
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Visits",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiUrl}}/portal/clinic/visits?page=1&per_page=10",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"portal",
+								"clinic",
+								"visits"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Get all visits for the authenticated clinic"
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Visit by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiUrl}}/portal/clinic/visits/1",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"portal",
+								"clinic",
+								"visits",
+								"1"
+							]
+						},
+						"description": "Get details of a specific visit for the authenticated clinic"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Visit",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"patient_id\": 1,\n  \"staff_id\": 1,\n  \"visit_date\": \"2024-01-15T10:00:00Z\",\n  \"reason\": \"Annual checkup\",\n  \"notes\": \"Patient appears healthy\"\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/portal/clinic/visits",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"portal",
+								"clinic",
+								"visits"
+							]
+						},
+						"description": "Create a new visit for a patient in the authenticated clinic"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Diagnosis",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"visit_id\": 1,\n  \"diagnosis_code\": \"Z00.00\",\n  \"description\": \"General health examination\"\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/portal/clinic/diagnoses",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"portal",
+								"clinic",
+								"diagnoses"
+							]
+						},
+						"description": "Add a diagnosis to a visit for the authenticated clinic"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Prescription",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"visit_id\": 1,\n  \"medication_name\": \"Acetaminophen\",\n  \"dosage\": \"500mg\",\n  \"instructions\": \"Take every 6 hours as needed for fever\",\n  \"duration_days\": 7\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/portal/clinic/prescriptions",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"portal",
+								"clinic",
+								"prescriptions"
+							]
+						},
+						"description": "Add a prescription to a visit for the authenticated clinic"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Workflow Examples",
+			"item": [
+				{
+					"name": "Complete Patient Journey",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}/health",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"health"
+							]
+						},
+						"description": "Step 1: Check API health before starting workflow"
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
@@ -2290,6 +3177,11 @@
 		{
 			"key": "apiUrl",
 			"value": "{{baseUrl}}/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "authToken",
+			"value": "",
 			"type": "string"
 		}
 	]

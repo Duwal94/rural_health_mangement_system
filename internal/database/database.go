@@ -25,6 +25,7 @@ func NewDatabase(dsn string) (*Database, error) {
 
 	// Auto migrate all models
 	err = db.AutoMigrate(
+		&models.User{},
 		&models.Clinic{},
 		&models.Patient{},
 		&models.Staff{},

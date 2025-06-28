@@ -1,0 +1,758 @@
+{
+	"info": {
+		"_postman_id": "clinic-workflow-2025",
+		"name": "Rural Health - Clinic Workflow",
+		"description": "Step-by-step clinic workflow for Rural Health Management System. This collection demonstrates the complete clinic onboarding and daily operations workflow including registration, staff management, patient care, and visit documentation.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Step 1: Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/health",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"health"
+					]
+				},
+				"description": "Verify API is running before starting workflow"
+			},
+			"response": []
+		},
+		{
+			"name": "Step 2: Register Clinic",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 201) {",
+							"    const responseJson = pm.response.json();",
+							"    pm.collectionVariables.set('clinicToken', responseJson.token);",
+							"    pm.collectionVariables.set('clinicId', responseJson.user.id);",
+							"    console.log('Clinic registered successfully!');",
+							"    console.log('Clinic ID:', responseJson.user.id);",
+							"    console.log('Token saved for subsequent requests');",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"clinic@example.com\",\n  \"password\": \"securePassword123\",\n  \"name\": \"Rural Health Center\",\n  \"address\": \"456 Main Street, Central Village\",\n  \"contact_number\": \"+1234567891\",\n  \"district\": \"Central District\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/auth/register/clinic",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"auth",
+						"register",
+						"clinic"
+					]
+				},
+				"description": "Register a new clinic and get authentication token"
+			},
+			"response": []
+		},
+		{
+			"name": "Step 3: Get Clinic Profile",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{clinicToken}}"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/portal/clinic/profile",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"portal",
+						"clinic",
+						"profile"
+					]
+				},
+				"description": "Verify clinic profile and authentication"
+			},
+			"response": []
+		},
+		{
+			"name": "Step 4: Check Dashboard Stats",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{clinicToken}}"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/portal/clinic/dashboard",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"portal",
+						"clinic",
+						"dashboard"
+					]
+				},
+				"description": "View initial dashboard statistics (should show zeros for new clinic)"
+			},
+			"response": []
+		},
+		{
+			"name": "Step 5: Add Doctor Staff",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 201) {",
+							"    const responseJson = pm.response.json();",
+							"    pm.collectionVariables.set('doctorId', responseJson.id);",
+							"    console.log('Doctor added successfully!');",
+							"    console.log('Doctor ID:', responseJson.id);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{clinicToken}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"full_name\": \"Dr. Sarah Johnson\",\n  \"role\": \"Doctor\",\n  \"phone\": \"+1234567900\",\n  \"email\": \"sarah.johnson@clinic.com\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/portal/clinic/staff",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"portal",
+						"clinic",
+						"staff"
+					]
+				},
+				"description": "Add a doctor to the clinic staff"
+			},
+			"response": []
+		},
+		{
+			"name": "Step 6: Add Nurse Staff",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 201) {",
+							"    const responseJson = pm.response.json();",
+							"    pm.collectionVariables.set('nurseId', responseJson.id);",
+							"    console.log('Nurse added successfully!');",
+							"    console.log('Nurse ID:', responseJson.id);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{clinicToken}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"full_name\": \"Nurse Mary Wilson\",\n  \"role\": \"Nurse\",\n  \"phone\": \"+1234567901\",\n  \"email\": \"mary.wilson@clinic.com\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/portal/clinic/staff",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"portal",
+						"clinic",
+						"staff"
+					]
+				},
+				"description": "Add a nurse to the clinic staff"
+			},
+			"response": []
+		},
+		{
+			"name": "Step 7: View All Staff",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{clinicToken}}"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/portal/clinic/staff",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"portal",
+						"clinic",
+						"staff"
+					]
+				},
+				"description": "View all staff members in the clinic"
+			},
+			"response": []
+		},
+		{
+			"name": "Step 8: Register First Patient",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 201) {",
+							"    const responseJson = pm.response.json();",
+							"    pm.collectionVariables.set('patient1Id', responseJson.user.id);",
+							"    pm.collectionVariables.set('patient1Token', responseJson.token);",
+							"    console.log('Patient 1 registered successfully!');",
+							"    console.log('Patient ID:', responseJson.user.id);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"patientPassword123\",\n  \"full_name\": \"John Doe\",\n  \"gender\": \"Male\",\n  \"date_of_birth\": \"1990-01-15\",\n  \"address\": \"123 Village Road, Rural Area\",\n  \"phone\": \"+1234567890\",\n  \"clinic_id\": {{clinicId}}\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/auth/register/patient",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"auth",
+						"register",
+						"patient"
+					]
+				},
+				"description": "Register first patient for the clinic"
+			},
+			"response": []
+		},
+		{
+			"name": "Step 9: Register Second Patient",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 201) {",
+							"    const responseJson = pm.response.json();",
+							"    pm.collectionVariables.set('patient2Id', responseJson.user.id);",
+							"    pm.collectionVariables.set('patient2Token', responseJson.token);",
+							"    console.log('Patient 2 registered successfully!');",
+							"    console.log('Patient ID:', responseJson.user.id);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"jane.smith@example.com\",\n  \"password\": \"patientPassword123\",\n  \"full_name\": \"Jane Smith\",\n  \"gender\": \"Female\",\n  \"date_of_birth\": \"1985-05-20\",\n  \"address\": \"456 Country Lane, Rural Area\",\n  \"phone\": \"+1234567892\",\n  \"clinic_id\": {{clinicId}}\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/auth/register/patient",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"auth",
+						"register",
+						"patient"
+					]
+				},
+				"description": "Register second patient for the clinic"
+			},
+			"response": []
+		},
+		{
+			"name": "Step 10: View All Patients",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{clinicToken}}"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/portal/clinic/patients",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"portal",
+						"clinic",
+						"patients"
+					]
+				},
+				"description": "View all patients registered to the clinic"
+			},
+			"response": []
+		},
+		{
+			"name": "Step 11: Create Visit for Patient 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 201) {",
+							"    const responseJson = pm.response.json();",
+							"    pm.collectionVariables.set('visit1Id', responseJson.id);",
+							"    console.log('Visit 1 created successfully!');",
+							"    console.log('Visit ID:', responseJson.id);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{clinicToken}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"patient_id\": {{patient1Id}},\n  \"staff_id\": {{doctorId}},\n  \"visit_date\": \"2024-01-15T10:00:00Z\",\n  \"reason\": \"Annual checkup\",\n  \"notes\": \"Patient appears healthy, routine examination\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/portal/clinic/visits",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"portal",
+						"clinic",
+						"visits"
+					]
+				},
+				"description": "Create a visit record for Patient 1 with the doctor"
+			},
+			"response": []
+		},
+		{
+			"name": "Step 12: Add Diagnosis to Visit 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 201) {",
+							"    const responseJson = pm.response.json();",
+							"    console.log('Diagnosis added successfully!');",
+							"    console.log('Diagnosis ID:', responseJson.id);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{clinicToken}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"visit_id\": {{visit1Id}},\n  \"diagnosis_code\": \"Z00.00\",\n  \"description\": \"General health examination - patient in good health\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/portal/clinic/diagnoses",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"portal",
+						"clinic",
+						"diagnoses"
+					]
+				},
+				"description": "Add a diagnosis to the visit"
+			},
+			"response": []
+		},
+		{
+			"name": "Step 13: Add Prescription to Visit 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 201) {",
+							"    const responseJson = pm.response.json();",
+							"    console.log('Prescription added successfully!');",
+							"    console.log('Prescription ID:', responseJson.id);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{clinicToken}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"visit_id\": {{visit1Id}},\n  \"medication_name\": \"Multivitamin\",\n  \"dosage\": \"1 tablet\",\n  \"instructions\": \"Take one tablet daily with breakfast\",\n  \"duration_days\": 30\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/portal/clinic/prescriptions",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"portal",
+						"clinic",
+						"prescriptions"
+					]
+				},
+				"description": "Add a prescription to the visit"
+			},
+			"response": []
+		},
+		{
+			"name": "Step 14: Create Visit for Patient 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 201) {",
+							"    const responseJson = pm.response.json();",
+							"    pm.collectionVariables.set('visit2Id', responseJson.id);",
+							"    console.log('Visit 2 created successfully!');",
+							"    console.log('Visit ID:', responseJson.id);",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{clinicToken}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"patient_id\": {{patient2Id}},\n  \"staff_id\": {{nurseId}},\n  \"visit_date\": \"2024-01-16T14:30:00Z\",\n  \"reason\": \"Flu symptoms consultation\",\n  \"notes\": \"Patient reports fever, cough, and fatigue for 2 days\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/portal/clinic/visits",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"portal",
+						"clinic",
+						"visits"
+					]
+				},
+				"description": "Create a visit record for Patient 2 with the nurse"
+			},
+			"response": []
+		},
+		{
+			"name": "Step 15: Add Diagnosis to Visit 2",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{clinicToken}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"visit_id\": {{visit2Id}},\n  \"diagnosis_code\": \"J11.1\",\n  \"description\": \"Influenza with respiratory manifestations\"\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/portal/clinic/diagnoses",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"portal",
+						"clinic",
+						"diagnoses"
+					]
+				},
+				"description": "Add flu diagnosis to Patient 2's visit"
+			},
+			"response": []
+		},
+		{
+			"name": "Step 16: Add Prescription to Visit 2",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{clinicToken}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"visit_id\": {{visit2Id}},\n  \"medication_name\": \"Acetaminophen\",\n  \"dosage\": \"500mg\",\n  \"instructions\": \"Take every 6 hours as needed for fever\",\n  \"duration_days\": 7\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/portal/clinic/prescriptions",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"portal",
+						"clinic",
+						"prescriptions"
+					]
+				},
+				"description": "Add fever medication for Patient 2"
+			},
+			"response": []
+		},
+		{
+			"name": "Step 17: View All Visits",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{clinicToken}}"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/portal/clinic/visits",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"portal",
+						"clinic",
+						"visits"
+					]
+				},
+				"description": "View all visits for the clinic"
+			},
+			"response": []
+		},
+		{
+			"name": "Step 18: View Specific Patient Details",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{clinicToken}}"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/portal/clinic/patients/{{patient1Id}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"portal",
+						"clinic",
+						"patients",
+						"{{patient1Id}}"
+					]
+				},
+				"description": "View detailed information for a specific patient including visit history"
+			},
+			"response": []
+		},
+		{
+			"name": "Step 19: Final Dashboard Check",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{clinicToken}}"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/portal/clinic/dashboard",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"portal",
+						"clinic",
+						"dashboard"
+					]
+				},
+				"description": "Check updated dashboard statistics after completing workflow"
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "clinicToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "clinicId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "doctorId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "nurseId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "patient1Id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "patient1Token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "patient2Id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "patient2Token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "visit1Id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "visit2Id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
