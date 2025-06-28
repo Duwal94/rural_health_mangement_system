@@ -1,0 +1,2296 @@
+{
+	"info": {
+		"_postman_id": "6c9bc6fa-d90e-4670-af9a-07fe769cf7ca",
+		"name": "Rural Health Management System API",
+		"description": "Complete API collection for Rural Health Management System with all CRUD operations for Clinics, Patients, Staff, Visits, Diagnoses, and Prescriptions.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43644364",
+		"_collection_link": "https://interstellar-eclipse-650736.postman.co/workspace/Team-Workspace~041877b3-75c8-4076-8f7c-78a10cc1d7f6/collection/43644364-6c9bc6fa-d90e-4670-af9a-07fe769cf7ca?action=share&source=collection_link&creator=43644364"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"health"
+							]
+						},
+						"description": "Check the health status of the API"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Clinics",
+			"item": [
+				{
+					"name": "Get All Clinics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}/clinics?page=1&per_page=10&search=&district=",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"clinics"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (default: 1)"
+								},
+								{
+									"key": "per_page",
+									"value": "10",
+									"description": "Items per page (default: 10, max: 100)"
+								},
+								{
+									"key": "search",
+									"value": "",
+									"description": "Search by name or address"
+								},
+								{
+									"key": "district",
+									"value": "",
+									"description": "Filter by district"
+								}
+							]
+						},
+						"description": "Get paginated list of clinics with optional search and district filtering"
+					},
+					"response": [
+						{
+							"name": "Get All Clinics",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{apiUrl}}/clinics?page=1&per_page=10&search=&district=",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"clinics"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"description": "Page number (default: 1)"
+										},
+										{
+											"key": "per_page",
+											"value": "10",
+											"description": "Items per page (default: 10, max: 100)"
+										},
+										{
+											"key": "search",
+											"value": "",
+											"description": "Search by name or address"
+										},
+										{
+											"key": "district",
+											"value": "",
+											"description": "Filter by district"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Sat, 28 Jun 2025 09:37:30 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "295"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"Central Rural Health Center\",\n            \"address\": \"123 Main Street, Central Village\",\n            \"contact_number\": \"+1234567890\",\n            \"district\": \"Central District\",\n            \"created_at\": \"2025-06-28T09:37:07.43846Z\",\n            \"updated_at\": \"2025-06-28T09:37:07.43846Z\"\n        }\n    ],\n    \"page\": 1,\n    \"per_page\": 10,\n    \"total\": 1,\n    \"total_pages\": 1\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Clinic by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}/clinics/1",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"clinics",
+								"1"
+							]
+						},
+						"description": "Get clinic details by ID with related patients and staff"
+					},
+					"response": [
+						{
+							"name": "Get Clinic by ID",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{apiUrl}}/clinics/1",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"clinics",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Sat, 28 Jun 2025 09:37:45 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "235"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"name\": \"Central Rural Health Center\",\n    \"address\": \"123 Main Street, Central Village\",\n    \"contact_number\": \"+1234567890\",\n    \"district\": \"Central District\",\n    \"created_at\": \"2025-06-28T09:37:07.43846Z\",\n    \"updated_at\": \"2025-06-28T09:37:07.43846Z\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Create Clinic",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Central Rural Health Center\",\n  \"address\": \"123 Main Street, Central Village\",\n  \"contact_number\": \"+1234567890\",\n  \"district\": \"Central District\"\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/clinics",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"clinics"
+							]
+						},
+						"description": "Create a new clinic"
+					},
+					"response": [
+						{
+							"name": "Create Clinic",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Central Rural Health Center\",\n  \"address\": \"123 Main Street, Central Village\",\n  \"contact_number\": \"+1234567890\",\n  \"district\": \"Central District\"\n}"
+								},
+								"url": {
+									"raw": "{{apiUrl}}/clinics",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"clinics"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Sat, 28 Jun 2025 09:37:07 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "243"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"name\": \"Central Rural Health Center\",\n    \"address\": \"123 Main Street, Central Village\",\n    \"contact_number\": \"+1234567890\",\n    \"district\": \"Central District\",\n    \"created_at\": \"2025-06-28T09:37:07.438460838Z\",\n    \"updated_at\": \"2025-06-28T09:37:07.438460838Z\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Clinic",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Central Rural Health Center\",\n  \"address\": \"123 Updated Main Street, Central Village\",\n  \"contact_number\": \"+1234567890\",\n  \"district\": \"Central District\"\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/clinics/1",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"clinics",
+								"1"
+							]
+						},
+						"description": "Update an existing clinic"
+					},
+					"response": [
+						{
+							"name": "Update Clinic",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Updated Central Rural Health Center\",\n  \"address\": \"123 Updated Main Street, Central Village\",\n  \"contact_number\": \"+1234567890\",\n  \"district\": \"Central District\"\n}"
+								},
+								"url": {
+									"raw": "{{apiUrl}}/clinics/1",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"clinics",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Sat, 28 Jun 2025 09:38:16 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "255"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"name\": \"Updated Central Rural Health Center\",\n    \"address\": \"123 Updated Main Street, Central Village\",\n    \"contact_number\": \"+1234567890\",\n    \"district\": \"Central District\",\n    \"created_at\": \"2025-06-28T09:37:07.43846Z\",\n    \"updated_at\": \"2025-06-28T09:38:16.560056728Z\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Clinic",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}/clinics/1",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"clinics",
+								"1"
+							]
+						},
+						"description": "Delete a clinic (soft delete). Cannot delete if clinic has associated patients or staff."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Patients",
+			"item": [
+				{
+					"name": "Get All Patients",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}/patients?page=1&per_page=10&search=&clinic_id=",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"patients"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (default: 1)"
+								},
+								{
+									"key": "per_page",
+									"value": "10",
+									"description": "Items per page (default: 10, max: 100)"
+								},
+								{
+									"key": "search",
+									"value": "",
+									"description": "Search by full name or phone"
+								},
+								{
+									"key": "clinic_id",
+									"value": "",
+									"description": "Filter by clinic ID"
+								}
+							]
+						},
+						"description": "Get paginated list of patients with optional search and clinic filtering"
+					},
+					"response": [
+						{
+							"name": "Get All Patients",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{apiUrl}}/patients?page=1&per_page=10&search=&clinic_id=",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"patients"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"description": "Page number (default: 1)"
+										},
+										{
+											"key": "per_page",
+											"value": "10",
+											"description": "Items per page (default: 10, max: 100)"
+										},
+										{
+											"key": "search",
+											"value": "",
+											"description": "Search by full name or phone"
+										},
+										{
+											"key": "clinic_id",
+											"value": "",
+											"description": "Filter by clinic ID"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Sat, 28 Jun 2025 09:39:00 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "582"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": [\n        {\n            \"id\": 1,\n            \"full_name\": \"Alice Cooper\",\n            \"gender\": \"Female\",\n            \"date_of_birth\": \"1985-03-15T00:00:00Z\",\n            \"address\": \"101 Village Lane, Central Village\",\n            \"phone\": \"+1234567910\",\n            \"clinic_id\": 1,\n            \"created_at\": \"2025-06-28T09:38:48.047385Z\",\n            \"updated_at\": \"2025-06-28T09:38:48.047385Z\",\n            \"clinic\": {\n                \"id\": 1,\n                \"name\": \"Updated Central Rural Health Center\",\n                \"address\": \"123 Updated Main Street, Central Village\",\n                \"contact_number\": \"+1234567890\",\n                \"district\": \"Central District\",\n                \"created_at\": \"2025-06-28T09:37:07.43846Z\",\n                \"updated_at\": \"2025-06-28T09:38:16.560056Z\"\n            }\n        }\n    ],\n    \"page\": 1,\n    \"per_page\": 10,\n    \"total\": 1,\n    \"total_pages\": 1\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Patient by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}/patients/1",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"patients",
+								"1"
+							]
+						},
+						"description": "Get patient details by ID with clinic and visits information"
+					},
+					"response": [
+						{
+							"name": "Get Patient by ID",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{apiUrl}}/patients/1",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"patients",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Sat, 28 Jun 2025 09:39:11 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "522"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"full_name\": \"Alice Cooper\",\n    \"gender\": \"Female\",\n    \"date_of_birth\": \"1985-03-15T00:00:00Z\",\n    \"address\": \"101 Village Lane, Central Village\",\n    \"phone\": \"+1234567910\",\n    \"clinic_id\": 1,\n    \"created_at\": \"2025-06-28T09:38:48.047385Z\",\n    \"updated_at\": \"2025-06-28T09:38:48.047385Z\",\n    \"clinic\": {\n        \"id\": 1,\n        \"name\": \"Updated Central Rural Health Center\",\n        \"address\": \"123 Updated Main Street, Central Village\",\n        \"contact_number\": \"+1234567890\",\n        \"district\": \"Central District\",\n        \"created_at\": \"2025-06-28T09:37:07.43846Z\",\n        \"updated_at\": \"2025-06-28T09:38:16.560056Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Create Patient",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"full_name\": \"Alice Cooper\",\n  \"gender\": \"Female\",\n  \"date_of_birth\": \"1985-03-15\",\n  \"address\": \"101 Village Lane, Central Village\",\n  \"phone\": \"+1234567910\",\n  \"clinic_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/patients",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"patients"
+							]
+						},
+						"description": "Create a new patient. Gender must be Male, Female, or Other. Date format: YYYY-MM-DD"
+					},
+					"response": [
+						{
+							"name": "Create Patient",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"full_name\": \"Alice Cooper\",\n  \"gender\": \"Female\",\n  \"date_of_birth\": \"1985-03-15\",\n  \"address\": \"101 Village Lane, Central Village\",\n  \"phone\": \"+1234567910\",\n  \"clinic_id\": 1\n}"
+								},
+								"url": {
+									"raw": "{{apiUrl}}/patients",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"patients"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Sat, 28 Jun 2025 09:38:47 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "522"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"full_name\": \"Alice Cooper\",\n    \"gender\": \"Female\",\n    \"date_of_birth\": \"1985-03-15T00:00:00Z\",\n    \"address\": \"101 Village Lane, Central Village\",\n    \"phone\": \"+1234567910\",\n    \"clinic_id\": 1,\n    \"created_at\": \"2025-06-28T09:38:48.047385Z\",\n    \"updated_at\": \"2025-06-28T09:38:48.047385Z\",\n    \"clinic\": {\n        \"id\": 1,\n        \"name\": \"Updated Central Rural Health Center\",\n        \"address\": \"123 Updated Main Street, Central Village\",\n        \"contact_number\": \"+1234567890\",\n        \"district\": \"Central District\",\n        \"created_at\": \"2025-06-28T09:37:07.43846Z\",\n        \"updated_at\": \"2025-06-28T09:38:16.560056Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Patient",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"full_name\": \"Alice Cooper Updated\",\n  \"gender\": \"Female\",\n  \"date_of_birth\": \"1985-03-15\",\n  \"address\": \"101 Updated Village Lane, Central Village\",\n  \"phone\": \"+1234567910\",\n  \"clinic_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/patients/1",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"patients",
+								"1"
+							]
+						},
+						"description": "Update an existing patient. All fields are optional."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Patient",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}/patients/1",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"patients",
+								"1"
+							]
+						},
+						"description": "Delete a patient (soft delete). Cannot delete if patient has existing visits."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Staff",
+			"item": [
+				{
+					"name": "Get All Staff",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}/staff?page=1&per_page=10&clinic_id=&role=",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"staff"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (default: 1)"
+								},
+								{
+									"key": "per_page",
+									"value": "10",
+									"description": "Items per page (default: 10, max: 100)"
+								},
+								{
+									"key": "clinic_id",
+									"value": "",
+									"description": "Filter by clinic ID"
+								},
+								{
+									"key": "role",
+									"value": "",
+									"description": "Filter by role (Doctor, Nurse, Administrator, Pharmacist)"
+								}
+							]
+						},
+						"description": "Get paginated list of staff with optional clinic and role filtering"
+					},
+					"response": [
+						{
+							"name": "Get All Staff",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{apiUrl}}/staff?page=1&per_page=10&clinic_id=&role=",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"staff"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"description": "Page number (default: 1)"
+										},
+										{
+											"key": "per_page",
+											"value": "10",
+											"description": "Items per page (default: 10, max: 100)"
+										},
+										{
+											"key": "clinic_id",
+											"value": "",
+											"description": "Filter by clinic ID"
+										},
+										{
+											"key": "role",
+											"value": "",
+											"description": "Filter by role (Doctor, Nurse, Administrator, Pharmacist)"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Sat, 28 Jun 2025 09:41:00 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "535"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": [\n        {\n            \"id\": 1,\n            \"full_name\": \"Dr. Sarah Johnson\",\n            \"role\": \"Doctor\",\n            \"phone\": \"+1234567900\",\n            \"email\": \"sarah.johnson@clinic.com\",\n            \"clinic_id\": 1,\n            \"created_at\": \"2025-06-28T09:40:04.003575Z\",\n            \"updated_at\": \"2025-06-28T09:40:04.003575Z\",\n            \"clinic\": {\n                \"id\": 1,\n                \"name\": \"Updated Central Rural Health Center\",\n                \"address\": \"123 Updated Main Street, Central Village\",\n                \"contact_number\": \"+1234567890\",\n                \"district\": \"Central District\",\n                \"created_at\": \"2025-06-28T09:37:07.43846Z\",\n                \"updated_at\": \"2025-06-28T09:38:16.560056Z\"\n            }\n        }\n    ],\n    \"page\": 1,\n    \"per_page\": 10,\n    \"total\": 1,\n    \"total_pages\": 1\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Staff by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}/staff/1",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"staff",
+								"1"
+							]
+						},
+						"description": "Get staff details by ID with clinic information"
+					},
+					"response": [
+						{
+							"name": "Get Staff by ID",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{apiUrl}}/staff/1",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"staff",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Sat, 28 Jun 2025 09:40:49 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "475"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"full_name\": \"Dr. Sarah Johnson\",\n    \"role\": \"Doctor\",\n    \"phone\": \"+1234567900\",\n    \"email\": \"sarah.johnson@clinic.com\",\n    \"clinic_id\": 1,\n    \"created_at\": \"2025-06-28T09:40:04.003575Z\",\n    \"updated_at\": \"2025-06-28T09:40:04.003575Z\",\n    \"clinic\": {\n        \"id\": 1,\n        \"name\": \"Updated Central Rural Health Center\",\n        \"address\": \"123 Updated Main Street, Central Village\",\n        \"contact_number\": \"+1234567890\",\n        \"district\": \"Central District\",\n        \"created_at\": \"2025-06-28T09:37:07.43846Z\",\n        \"updated_at\": \"2025-06-28T09:38:16.560056Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Create Staff",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"full_name\": \"Dr. Sarah Johnson\",\n  \"role\": \"Doctor\",\n  \"phone\": \"+1234567900\",\n  \"email\": \"sarah.johnson@clinic.com\",\n  \"clinic_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/staff",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"staff"
+							]
+						},
+						"description": "Create a new staff member. Role must be Doctor, Nurse, Administrator, or Pharmacist"
+					},
+					"response": [
+						{
+							"name": "Create Staff",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"full_name\": \"Dr. Sarah Johnson\",\n  \"role\": \"Doctor\",\n  \"phone\": \"+1234567900\",\n  \"email\": \"sarah.johnson@clinic.com\",\n  \"clinic_id\": 1\n}"
+								},
+								"url": {
+									"raw": "{{apiUrl}}/staff",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"staff"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Sat, 28 Jun 2025 09:40:03 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "475"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"full_name\": \"Dr. Sarah Johnson\",\n    \"role\": \"Doctor\",\n    \"phone\": \"+1234567900\",\n    \"email\": \"sarah.johnson@clinic.com\",\n    \"clinic_id\": 1,\n    \"created_at\": \"2025-06-28T09:40:04.003575Z\",\n    \"updated_at\": \"2025-06-28T09:40:04.003575Z\",\n    \"clinic\": {\n        \"id\": 1,\n        \"name\": \"Updated Central Rural Health Center\",\n        \"address\": \"123 Updated Main Street, Central Village\",\n        \"contact_number\": \"+1234567890\",\n        \"district\": \"Central District\",\n        \"created_at\": \"2025-06-28T09:37:07.43846Z\",\n        \"updated_at\": \"2025-06-28T09:38:16.560056Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Staff",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"full_name\": \"Dr. Sarah Johnson Updated\",\n  \"role\": \"Doctor\",\n  \"phone\": \"+1234567900\",\n  \"email\": \"sarah.johnson.updated@clinic.com\",\n  \"clinic_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/staff/1",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"staff",
+								"1"
+							]
+						},
+						"description": "Update an existing staff member"
+					},
+					"response": [
+						{
+							"name": "Update Staff",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"full_name\": \"Dr. Sarah Johnson Updated\",\n  \"role\": \"Doctor\",\n  \"phone\": \"+1234567900\",\n  \"email\": \"sarah.johnson.updated@clinic.com\",\n  \"clinic_id\": 1\n}"
+								},
+								"url": {
+									"raw": "{{apiUrl}}/staff/1",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"staff",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Sat, 28 Jun 2025 09:41:13 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "491"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"full_name\": \"Dr. Sarah Johnson Updated\",\n    \"role\": \"Doctor\",\n    \"phone\": \"+1234567900\",\n    \"email\": \"sarah.johnson.updated@clinic.com\",\n    \"clinic_id\": 1,\n    \"created_at\": \"2025-06-28T09:40:04.003575Z\",\n    \"updated_at\": \"2025-06-28T09:41:14.173253Z\",\n    \"clinic\": {\n        \"id\": 1,\n        \"name\": \"Updated Central Rural Health Center\",\n        \"address\": \"123 Updated Main Street, Central Village\",\n        \"contact_number\": \"+1234567890\",\n        \"district\": \"Central District\",\n        \"created_at\": \"2025-06-28T09:37:07.43846Z\",\n        \"updated_at\": \"2025-06-28T09:38:16.560056Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Staff",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}/staff/1",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"staff",
+								"1"
+							]
+						},
+						"description": "Delete a staff member (soft delete). Cannot delete if staff has existing visits."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Visits",
+			"item": [
+				{
+					"name": "Get All Visits",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}/visits?page=1&per_page=10&patient_id=&clinic_id=",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"visits"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (default: 1)"
+								},
+								{
+									"key": "per_page",
+									"value": "10",
+									"description": "Items per page (default: 10, max: 100)"
+								},
+								{
+									"key": "patient_id",
+									"value": "",
+									"description": "Filter by patient ID"
+								},
+								{
+									"key": "clinic_id",
+									"value": "",
+									"description": "Filter by clinic ID"
+								}
+							]
+						},
+						"description": "Get paginated list of visits with patient, clinic, and staff information"
+					},
+					"response": [
+						{
+							"name": "Get All Visits",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{apiUrl}}/visits?page=1&per_page=10&patient_id=&clinic_id=",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"visits"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"description": "Page number (default: 1)"
+										},
+										{
+											"key": "per_page",
+											"value": "10",
+											"description": "Items per page (default: 10, max: 100)"
+										},
+										{
+											"key": "patient_id",
+											"value": "",
+											"description": "Filter by patient ID"
+										},
+										{
+											"key": "clinic_id",
+											"value": "",
+											"description": "Filter by clinic ID"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Sat, 28 Jun 2025 09:42:48 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1098"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": [\n        {\n            \"id\": 1,\n            \"patient_id\": 1,\n            \"clinic_id\": 1,\n            \"staff_id\": 1,\n            \"visit_date\": \"2024-01-15T10:00:00Z\",\n            \"reason\": \"Annual checkup\",\n            \"notes\": \"Patient appears healthy, all vitals normal\",\n            \"created_at\": \"2025-06-28T09:42:32.645963Z\",\n            \"updated_at\": \"2025-06-28T09:42:32.645963Z\",\n            \"patient\": {\n                \"id\": 1,\n                \"full_name\": \"Alice Cooper Updated\",\n                \"gender\": \"Female\",\n                \"date_of_birth\": \"1985-03-15T00:00:00Z\",\n                \"address\": \"101 Updated Village Lane, Central Village\",\n                \"phone\": \"+1234567910\",\n                \"clinic_id\": 1,\n                \"created_at\": \"2025-06-28T09:38:48.047385Z\",\n                \"updated_at\": \"2025-06-28T09:39:44.982823Z\"\n            },\n            \"clinic\": {\n                \"id\": 1,\n                \"name\": \"Updated Central Rural Health Center\",\n                \"address\": \"123 Updated Main Street, Central Village\",\n                \"contact_number\": \"+1234567890\",\n                \"district\": \"Central District\",\n                \"created_at\": \"2025-06-28T09:37:07.43846Z\",\n                \"updated_at\": \"2025-06-28T09:38:16.560056Z\"\n            },\n            \"staff\": {\n                \"id\": 1,\n                \"full_name\": \"Dr. Sarah Johnson Updated\",\n                \"role\": \"Doctor\",\n                \"phone\": \"+1234567900\",\n                \"email\": \"sarah.johnson.updated@clinic.com\",\n                \"clinic_id\": 1,\n                \"created_at\": \"2025-06-28T09:40:04.003575Z\",\n                \"updated_at\": \"2025-06-28T09:41:14.173253Z\"\n            }\n        }\n    ],\n    \"page\": 1,\n    \"per_page\": 10,\n    \"total\": 1,\n    \"total_pages\": 1\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Visit by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}/visits/1",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"visits",
+								"1"
+							]
+						},
+						"description": "Get visit details by ID with patient, clinic, staff, diagnoses, and prescriptions"
+					},
+					"response": [
+						{
+							"name": "Get Visit by ID",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{apiUrl}}/visits/1",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"visits",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Sat, 28 Jun 2025 09:42:44 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1038"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"patient_id\": 1,\n    \"clinic_id\": 1,\n    \"staff_id\": 1,\n    \"visit_date\": \"2024-01-15T10:00:00Z\",\n    \"reason\": \"Annual checkup\",\n    \"notes\": \"Patient appears healthy, all vitals normal\",\n    \"created_at\": \"2025-06-28T09:42:32.645963Z\",\n    \"updated_at\": \"2025-06-28T09:42:32.645963Z\",\n    \"patient\": {\n        \"id\": 1,\n        \"full_name\": \"Alice Cooper Updated\",\n        \"gender\": \"Female\",\n        \"date_of_birth\": \"1985-03-15T00:00:00Z\",\n        \"address\": \"101 Updated Village Lane, Central Village\",\n        \"phone\": \"+1234567910\",\n        \"clinic_id\": 1,\n        \"created_at\": \"2025-06-28T09:38:48.047385Z\",\n        \"updated_at\": \"2025-06-28T09:39:44.982823Z\"\n    },\n    \"clinic\": {\n        \"id\": 1,\n        \"name\": \"Updated Central Rural Health Center\",\n        \"address\": \"123 Updated Main Street, Central Village\",\n        \"contact_number\": \"+1234567890\",\n        \"district\": \"Central District\",\n        \"created_at\": \"2025-06-28T09:37:07.43846Z\",\n        \"updated_at\": \"2025-06-28T09:38:16.560056Z\"\n    },\n    \"staff\": {\n        \"id\": 1,\n        \"full_name\": \"Dr. Sarah Johnson Updated\",\n        \"role\": \"Doctor\",\n        \"phone\": \"+1234567900\",\n        \"email\": \"sarah.johnson.updated@clinic.com\",\n        \"clinic_id\": 1,\n        \"created_at\": \"2025-06-28T09:40:04.003575Z\",\n        \"updated_at\": \"2025-06-28T09:41:14.173253Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Create Visit",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"patient_id\": 1,\n  \"clinic_id\": 1,\n  \"staff_id\": 1,\n  \"visit_date\": \"2024-01-15T10:00:00Z\",\n  \"reason\": \"Annual checkup\",\n  \"notes\": \"Patient appears healthy, all vitals normal\"\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/visits",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"visits"
+							]
+						},
+						"description": "Create a new visit. If visit_date is not provided, current time will be used."
+					},
+					"response": [
+						{
+							"name": "Create Visit",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"patient_id\": 1,\n  \"clinic_id\": 1,\n  \"staff_id\": 1,\n  \"visit_date\": \"2024-01-15T10:00:00Z\",\n  \"reason\": \"Annual checkup\",\n  \"notes\": \"Patient appears healthy, all vitals normal\"\n}"
+								},
+								"url": {
+									"raw": "{{apiUrl}}/visits",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"visits"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Sat, 28 Jun 2025 09:42:32 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1038"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"patient_id\": 1,\n    \"clinic_id\": 1,\n    \"staff_id\": 1,\n    \"visit_date\": \"2024-01-15T10:00:00Z\",\n    \"reason\": \"Annual checkup\",\n    \"notes\": \"Patient appears healthy, all vitals normal\",\n    \"created_at\": \"2025-06-28T09:42:32.645963Z\",\n    \"updated_at\": \"2025-06-28T09:42:32.645963Z\",\n    \"patient\": {\n        \"id\": 1,\n        \"full_name\": \"Alice Cooper Updated\",\n        \"gender\": \"Female\",\n        \"date_of_birth\": \"1985-03-15T00:00:00Z\",\n        \"address\": \"101 Updated Village Lane, Central Village\",\n        \"phone\": \"+1234567910\",\n        \"clinic_id\": 1,\n        \"created_at\": \"2025-06-28T09:38:48.047385Z\",\n        \"updated_at\": \"2025-06-28T09:39:44.982823Z\"\n    },\n    \"clinic\": {\n        \"id\": 1,\n        \"name\": \"Updated Central Rural Health Center\",\n        \"address\": \"123 Updated Main Street, Central Village\",\n        \"contact_number\": \"+1234567890\",\n        \"district\": \"Central District\",\n        \"created_at\": \"2025-06-28T09:37:07.43846Z\",\n        \"updated_at\": \"2025-06-28T09:38:16.560056Z\"\n    },\n    \"staff\": {\n        \"id\": 1,\n        \"full_name\": \"Dr. Sarah Johnson Updated\",\n        \"role\": \"Doctor\",\n        \"phone\": \"+1234567900\",\n        \"email\": \"sarah.johnson.updated@clinic.com\",\n        \"clinic_id\": 1,\n        \"created_at\": \"2025-06-28T09:40:04.003575Z\",\n        \"updated_at\": \"2025-06-28T09:41:14.173253Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Visit",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"patient_id\": 1,\n  \"clinic_id\": 1,\n  \"staff_id\": 1,\n  \"visit_date\": \"2024-01-15T10:00:00Z\",\n  \"reason\": \"Updated annual checkup\",\n  \"notes\": \"Patient appears healthy, all vitals normal - updated notes\"\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/visits/1",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"visits",
+								"1"
+							]
+						},
+						"description": "Update an existing visit"
+					},
+					"response": [
+						{
+							"name": "Update Visit",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"patient_id\": 1,\n  \"clinic_id\": 1,\n  \"staff_id\": 1,\n  \"visit_date\": \"2024-01-15T10:00:00Z\",\n  \"reason\": \"Updated annual checkup\",\n  \"notes\": \"Patient appears healthy, all vitals normal - updated notes\"\n}"
+								},
+								"url": {
+									"raw": "{{apiUrl}}/visits/1",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"visits",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Sat, 28 Jun 2025 09:42:55 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1062"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"patient_id\": 1,\n    \"clinic_id\": 1,\n    \"staff_id\": 1,\n    \"visit_date\": \"2024-01-15T10:00:00Z\",\n    \"reason\": \"Updated annual checkup\",\n    \"notes\": \"Patient appears healthy, all vitals normal - updated notes\",\n    \"created_at\": \"2025-06-28T09:42:32.645963Z\",\n    \"updated_at\": \"2025-06-28T09:42:56.175682Z\",\n    \"patient\": {\n        \"id\": 1,\n        \"full_name\": \"Alice Cooper Updated\",\n        \"gender\": \"Female\",\n        \"date_of_birth\": \"1985-03-15T00:00:00Z\",\n        \"address\": \"101 Updated Village Lane, Central Village\",\n        \"phone\": \"+1234567910\",\n        \"clinic_id\": 1,\n        \"created_at\": \"2025-06-28T09:38:48.047385Z\",\n        \"updated_at\": \"2025-06-28T09:39:44.982823Z\"\n    },\n    \"clinic\": {\n        \"id\": 1,\n        \"name\": \"Updated Central Rural Health Center\",\n        \"address\": \"123 Updated Main Street, Central Village\",\n        \"contact_number\": \"+1234567890\",\n        \"district\": \"Central District\",\n        \"created_at\": \"2025-06-28T09:37:07.43846Z\",\n        \"updated_at\": \"2025-06-28T09:38:16.560056Z\"\n    },\n    \"staff\": {\n        \"id\": 1,\n        \"full_name\": \"Dr. Sarah Johnson Updated\",\n        \"role\": \"Doctor\",\n        \"phone\": \"+1234567900\",\n        \"email\": \"sarah.johnson.updated@clinic.com\",\n        \"clinic_id\": 1,\n        \"created_at\": \"2025-06-28T09:40:04.003575Z\",\n        \"updated_at\": \"2025-06-28T09:41:14.173253Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Visit",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}/visits/1",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"visits",
+								"1"
+							]
+						},
+						"description": "Delete a visit (soft delete). Cannot delete if visit has existing diagnoses or prescriptions."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Diagnoses",
+			"item": [
+				{
+					"name": "Get All Diagnoses",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}/diagnoses?page=1&per_page=10&visit_id=",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"diagnoses"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (default: 1)"
+								},
+								{
+									"key": "per_page",
+									"value": "10",
+									"description": "Items per page (default: 10, max: 100)"
+								},
+								{
+									"key": "visit_id",
+									"value": "",
+									"description": "Filter by visit ID"
+								}
+							]
+						},
+						"description": "Get paginated list of diagnoses with visit information"
+					},
+					"response": [
+						{
+							"name": "Get All Diagnoses",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{apiUrl}}/diagnoses?page=1&per_page=10&visit_id=",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"diagnoses"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"description": "Page number (default: 1)"
+										},
+										{
+											"key": "per_page",
+											"value": "10",
+											"description": "Items per page (default: 10, max: 100)"
+										},
+										{
+											"key": "visit_id",
+											"value": "",
+											"description": "Filter by visit ID"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Sat, 28 Jun 2025 09:44:07 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "520"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": [\n        {\n            \"id\": 1,\n            \"visit_id\": 1,\n            \"diagnosis_code\": \"Z00.00\",\n            \"description\": \"General health examination\",\n            \"created_at\": \"2025-06-28T09:43:32.111086Z\",\n            \"updated_at\": \"2025-06-28T09:43:32.111086Z\",\n            \"visit\": {\n                \"id\": 1,\n                \"patient_id\": 1,\n                \"clinic_id\": 1,\n                \"staff_id\": 1,\n                \"visit_date\": \"2024-01-15T10:00:00Z\",\n                \"reason\": \"Updated annual checkup\",\n                \"notes\": \"Patient appears healthy, all vitals normal - updated notes\",\n                \"created_at\": \"2025-06-28T09:42:32.645963Z\",\n                \"updated_at\": \"2025-06-28T09:42:56.175682Z\"\n            }\n        }\n    ],\n    \"page\": 1,\n    \"per_page\": 10,\n    \"total\": 1,\n    \"total_pages\": 1\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Diagnosis by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}/diagnoses/1",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"diagnoses",
+								"1"
+							]
+						},
+						"description": "Get diagnosis details by ID with visit information"
+					},
+					"response": [
+						{
+							"name": "Get Diagnosis by ID",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{apiUrl}}/diagnoses/1",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"diagnoses",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Sat, 28 Jun 2025 09:44:02 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "460"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"visit_id\": 1,\n    \"diagnosis_code\": \"Z00.00\",\n    \"description\": \"General health examination\",\n    \"created_at\": \"2025-06-28T09:43:32.111086Z\",\n    \"updated_at\": \"2025-06-28T09:43:32.111086Z\",\n    \"visit\": {\n        \"id\": 1,\n        \"patient_id\": 1,\n        \"clinic_id\": 1,\n        \"staff_id\": 1,\n        \"visit_date\": \"2024-01-15T10:00:00Z\",\n        \"reason\": \"Updated annual checkup\",\n        \"notes\": \"Patient appears healthy, all vitals normal - updated notes\",\n        \"created_at\": \"2025-06-28T09:42:32.645963Z\",\n        \"updated_at\": \"2025-06-28T09:42:56.175682Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Create Diagnosis",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"visit_id\": 1,\n  \"diagnosis_code\": \"Z00.00\",\n  \"description\": \"General health examination\"\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/diagnoses",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"diagnoses"
+							]
+						},
+						"description": "Create a new diagnosis for a visit"
+					},
+					"response": [
+						{
+							"name": "Create Diagnosis",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"visit_id\": 1,\n  \"diagnosis_code\": \"Z00.00\",\n  \"description\": \"General health examination\"\n}"
+								},
+								"url": {
+									"raw": "{{apiUrl}}/diagnoses",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"diagnoses"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Sat, 28 Jun 2025 09:43:31 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "460"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"visit_id\": 1,\n    \"diagnosis_code\": \"Z00.00\",\n    \"description\": \"General health examination\",\n    \"created_at\": \"2025-06-28T09:43:32.111086Z\",\n    \"updated_at\": \"2025-06-28T09:43:32.111086Z\",\n    \"visit\": {\n        \"id\": 1,\n        \"patient_id\": 1,\n        \"clinic_id\": 1,\n        \"staff_id\": 1,\n        \"visit_date\": \"2024-01-15T10:00:00Z\",\n        \"reason\": \"Updated annual checkup\",\n        \"notes\": \"Patient appears healthy, all vitals normal - updated notes\",\n        \"created_at\": \"2025-06-28T09:42:32.645963Z\",\n        \"updated_at\": \"2025-06-28T09:42:56.175682Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Diagnosis",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"diagnosis_code\": \"Z00.01\",\n  \"description\": \"Updated general health examination\"\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/diagnoses/1",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"diagnoses",
+								"1"
+							]
+						},
+						"description": "Update an existing diagnosis"
+					},
+					"response": [
+						{
+							"name": "Update Diagnosis",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"diagnosis_code\": \"Z00.01\",\n  \"description\": \"Updated general health examination\"\n}"
+								},
+								"url": {
+									"raw": "{{apiUrl}}/diagnoses/1",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"diagnoses",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Sat, 28 Jun 2025 09:44:14 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "467"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"visit_id\": 1,\n    \"diagnosis_code\": \"Z00.01\",\n    \"description\": \"Updated general health examination\",\n    \"created_at\": \"2025-06-28T09:43:32.111086Z\",\n    \"updated_at\": \"2025-06-28T09:44:14.86456Z\",\n    \"visit\": {\n        \"id\": 1,\n        \"patient_id\": 1,\n        \"clinic_id\": 1,\n        \"staff_id\": 1,\n        \"visit_date\": \"2024-01-15T10:00:00Z\",\n        \"reason\": \"Updated annual checkup\",\n        \"notes\": \"Patient appears healthy, all vitals normal - updated notes\",\n        \"created_at\": \"2025-06-28T09:42:32.645963Z\",\n        \"updated_at\": \"2025-06-28T09:42:56.175682Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Diagnosis",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}/diagnoses/1",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"diagnoses",
+								"1"
+							]
+						},
+						"description": "Delete a diagnosis (soft delete)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Prescriptions",
+			"item": [
+				{
+					"name": "Get All Prescriptions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}/prescriptions?page=1&per_page=10&visit_id=",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"prescriptions"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (default: 1)"
+								},
+								{
+									"key": "per_page",
+									"value": "10",
+									"description": "Items per page (default: 10, max: 100)"
+								},
+								{
+									"key": "visit_id",
+									"value": "",
+									"description": "Filter by visit ID"
+								}
+							]
+						},
+						"description": "Get paginated list of prescriptions with visit information"
+					},
+					"response": [
+						{
+							"name": "Get All Prescriptions",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{apiUrl}}/prescriptions?page=1&per_page=10&visit_id=",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"prescriptions"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"description": "Page number (default: 1)"
+										},
+										{
+											"key": "per_page",
+											"value": "10",
+											"description": "Items per page (default: 10, max: 100)"
+										},
+										{
+											"key": "visit_id",
+											"value": "",
+											"description": "Filter by visit ID"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Sat, 28 Jun 2025 09:46:07 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "576"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": [\n        {\n            \"id\": 1,\n            \"visit_id\": 1,\n            \"medication_name\": \"Acetaminophen\",\n            \"dosage\": \"500mg\",\n            \"instructions\": \"Take every 6 hours as needed for fever\",\n            \"duration_days\": 7,\n            \"created_at\": \"2025-06-28T09:45:33.372822Z\",\n            \"updated_at\": \"2025-06-28T09:45:33.372822Z\",\n            \"visit\": {\n                \"id\": 1,\n                \"patient_id\": 1,\n                \"clinic_id\": 1,\n                \"staff_id\": 1,\n                \"visit_date\": \"2024-01-15T10:00:00Z\",\n                \"reason\": \"Updated annual checkup\",\n                \"notes\": \"Patient appears healthy, all vitals normal - updated notes\",\n                \"created_at\": \"2025-06-28T09:42:32.645963Z\",\n                \"updated_at\": \"2025-06-28T09:42:56.175682Z\"\n            }\n        }\n    ],\n    \"page\": 1,\n    \"per_page\": 10,\n    \"total\": 1,\n    \"total_pages\": 1\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Prescription by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}/prescriptions/1",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"prescriptions",
+								"1"
+							]
+						},
+						"description": "Get prescription details by ID with visit information"
+					},
+					"response": [
+						{
+							"name": "Get Prescription by ID",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{apiUrl}}/prescriptions/1",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"prescriptions",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Sat, 28 Jun 2025 09:45:47 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "516"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"visit_id\": 1,\n    \"medication_name\": \"Acetaminophen\",\n    \"dosage\": \"500mg\",\n    \"instructions\": \"Take every 6 hours as needed for fever\",\n    \"duration_days\": 7,\n    \"created_at\": \"2025-06-28T09:45:33.372822Z\",\n    \"updated_at\": \"2025-06-28T09:45:33.372822Z\",\n    \"visit\": {\n        \"id\": 1,\n        \"patient_id\": 1,\n        \"clinic_id\": 1,\n        \"staff_id\": 1,\n        \"visit_date\": \"2024-01-15T10:00:00Z\",\n        \"reason\": \"Updated annual checkup\",\n        \"notes\": \"Patient appears healthy, all vitals normal - updated notes\",\n        \"created_at\": \"2025-06-28T09:42:32.645963Z\",\n        \"updated_at\": \"2025-06-28T09:42:56.175682Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Create Prescription",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"visit_id\": 1,\n  \"medication_name\": \"Acetaminophen\",\n  \"dosage\": \"500mg\",\n  \"instructions\": \"Take every 6 hours as needed for fever\",\n  \"duration_days\": 7\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/prescriptions",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"prescriptions"
+							]
+						},
+						"description": "Create a new prescription for a visit"
+					},
+					"response": [
+						{
+							"name": "Create Prescription",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"visit_id\": 1,\n  \"medication_name\": \"Acetaminophen\",\n  \"dosage\": \"500mg\",\n  \"instructions\": \"Take every 6 hours as needed for fever\",\n  \"duration_days\": 7\n}"
+								},
+								"url": {
+									"raw": "{{apiUrl}}/prescriptions",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"prescriptions"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Sat, 28 Jun 2025 09:45:32 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "516"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"visit_id\": 1,\n    \"medication_name\": \"Acetaminophen\",\n    \"dosage\": \"500mg\",\n    \"instructions\": \"Take every 6 hours as needed for fever\",\n    \"duration_days\": 7,\n    \"created_at\": \"2025-06-28T09:45:33.372822Z\",\n    \"updated_at\": \"2025-06-28T09:45:33.372822Z\",\n    \"visit\": {\n        \"id\": 1,\n        \"patient_id\": 1,\n        \"clinic_id\": 1,\n        \"staff_id\": 1,\n        \"visit_date\": \"2024-01-15T10:00:00Z\",\n        \"reason\": \"Updated annual checkup\",\n        \"notes\": \"Patient appears healthy, all vitals normal - updated notes\",\n        \"created_at\": \"2025-06-28T09:42:32.645963Z\",\n        \"updated_at\": \"2025-06-28T09:42:56.175682Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Update Prescription",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"medication_name\": \"Acetaminophen Updated\",\n  \"dosage\": \"750mg\",\n  \"instructions\": \"Take every 8 hours as needed for fever\",\n  \"duration_days\": 10\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/prescriptions/1",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"prescriptions",
+								"1"
+							]
+						},
+						"description": "Update an existing prescription"
+					},
+					"response": [
+						{
+							"name": "Update Prescription",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"medication_name\": \"Acetaminophen Updated\",\n  \"dosage\": \"750mg\",\n  \"instructions\": \"Take every 8 hours as needed for fever\",\n  \"duration_days\": 10\n}"
+								},
+								"url": {
+									"raw": "{{apiUrl}}/prescriptions/1",
+									"host": [
+										"{{apiUrl}}"
+									],
+									"path": [
+										"prescriptions",
+										"1"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Sat, 28 Jun 2025 09:46:16 GMT"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Content-Length",
+									"value": "525"
+								},
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": 1,\n    \"visit_id\": 1,\n    \"medication_name\": \"Acetaminophen Updated\",\n    \"dosage\": \"750mg\",\n    \"instructions\": \"Take every 8 hours as needed for fever\",\n    \"duration_days\": 10,\n    \"created_at\": \"2025-06-28T09:45:33.372822Z\",\n    \"updated_at\": \"2025-06-28T09:46:17.024381Z\",\n    \"visit\": {\n        \"id\": 1,\n        \"patient_id\": 1,\n        \"clinic_id\": 1,\n        \"staff_id\": 1,\n        \"visit_date\": \"2024-01-15T10:00:00Z\",\n        \"reason\": \"Updated annual checkup\",\n        \"notes\": \"Patient appears healthy, all vitals normal - updated notes\",\n        \"created_at\": \"2025-06-28T09:42:32.645963Z\",\n        \"updated_at\": \"2025-06-28T09:42:56.175682Z\"\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete Prescription",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{apiUrl}}/prescriptions/1",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"prescriptions",
+								"1"
+							]
+						},
+						"description": "Delete a prescription (soft delete)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sample Data Workflow",
+			"item": [
+				{
+					"name": "1. Create Sample Clinic",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Sample Rural Health Center\",\n  \"address\": \"456 Sample Street, Sample Village\",\n  \"contact_number\": \"+1234567999\",\n  \"district\": \"Sample District\"\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/clinics",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"clinics"
+							]
+						},
+						"description": "Step 1: Create a clinic first (required for patients and staff)"
+					},
+					"response": []
+				},
+				{
+					"name": "2. Create Sample Patient",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"full_name\": \"Sample Patient\",\n  \"gender\": \"Male\",\n  \"date_of_birth\": \"1990-05-15\",\n  \"address\": \"789 Patient Street, Sample Village\",\n  \"phone\": \"+1234567988\",\n  \"clinic_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/patients",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"patients"
+							]
+						},
+						"description": "Step 2: Create a patient (use clinic_id from step 1)"
+					},
+					"response": []
+				},
+				{
+					"name": "3. Create Sample Staff",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"full_name\": \"Dr. Sample Doctor\",\n  \"role\": \"Doctor\",\n  \"phone\": \"+1234567977\",\n  \"email\": \"sample.doctor@clinic.com\",\n  \"clinic_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/staff",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"staff"
+							]
+						},
+						"description": "Step 3: Create a staff member (use clinic_id from step 1)"
+					},
+					"response": []
+				},
+				{
+					"name": "4. Create Sample Visit",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"patient_id\": 1,\n  \"clinic_id\": 1,\n  \"staff_id\": 1,\n  \"reason\": \"Sample consultation\",\n  \"notes\": \"Sample visit notes\"\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/visits",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"visits"
+							]
+						},
+						"description": "Step 4: Create a visit (use IDs from previous steps)"
+					},
+					"response": []
+				},
+				{
+					"name": "5. Create Sample Diagnosis",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"visit_id\": 1,\n  \"diagnosis_code\": \"Z00.00\",\n  \"description\": \"Sample routine health examination\"\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/diagnoses",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"diagnoses"
+							]
+						},
+						"description": "Step 5: Create a diagnosis (use visit_id from step 4)"
+					},
+					"response": []
+				},
+				{
+					"name": "6. Create Sample Prescription",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"visit_id\": 1,\n  \"medication_name\": \"Sample Medication\",\n  \"dosage\": \"500mg\",\n  \"instructions\": \"Take twice daily with food\",\n  \"duration_days\": 14\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/prescriptions",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"prescriptions"
+							]
+						},
+						"description": "Step 6: Create a prescription (use visit_id from step 4)"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "apiUrl",
+			"value": "{{baseUrl}}/api/v1",
+			"type": "string"
+		}
+	]
+}
