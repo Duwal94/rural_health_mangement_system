@@ -59,12 +59,11 @@ func main() {
 	auth.Post("/register/patient", authHandler.RegisterPatient)
 	auth.Post("/register/clinic", authHandler.RegisterClinic)
 	auth.Post("/login", authHandler.Login)
-
+	auth.Get("/clinics", clinicHandler.GetClinics)
 	// Protected routes - require authentication
 	protected := v1.Group("/", authHandler.AuthMiddleware)
 	protected.Post("/auth/change-password", authHandler.ChangePassword)
 	protected.Get("/auth/profile", authHandler.GetProfile)
-
 	// Patient Portal routes (patient access only)
 	patientPortal := v1.Group("/portal/patient", authHandler.AuthMiddleware, authHandler.RequireUserType("patient"))
 	patientPortal.Get("/profile", patientPortalHandler.GetMyProfile)
@@ -94,7 +93,6 @@ func main() {
 
 	// Clinic routes (admin only for system management)
 	clinics := admin.Group("/clinics")
-	clinics.Get("/", clinicHandler.GetClinics)
 	clinics.Get("/:id", clinicHandler.GetClinic)
 	clinics.Post("/", clinicHandler.CreateClinic)
 	clinics.Put("/:id", clinicHandler.UpdateClinic)
