@@ -36,6 +36,8 @@ func main() {
 	// New separate portal handlers
 	staffPortalHandler := handlers.NewStaffPortalHandler(db.DB)
 	medicalPortalHandler := handlers.NewMedicalPortalHandler(db.DB)
+	// Dashboard analytics handler
+	dashboardAnalyticsHandler := handlers.NewDashboardAnalyticsHandler(db.DB)
 
 	// Create Fiber app
 	app := fiber.New(fiber.Config{
@@ -66,6 +68,11 @@ func main() {
 	auth.Post("/login", authHandler.Login)
 	auth.Post("/clinic-login", authHandler.ClinicLogin) // New clinic-specific login
 	auth.Get("/clinics", clinicHandler.GetClinics)
+
+	// Public Dashboard Analytics (not protected)
+	v1.Get("/dashboard/analytics", dashboardAnalyticsHandler.GetSystemDashboard)
+	v1.Get("/dashboard/content", dashboardAnalyticsHandler.GetSystemDashboard) // Alternative route name
+
 	// Protected routes - require authentication
 	protected := v1.Group("/", authHandler.AuthMiddleware)
 	protected.Post("/auth/change-password", authHandler.ChangePassword)
@@ -85,6 +92,7 @@ func main() {
 	clinicPortal.Get("/profile", clinicPortalHandler.GetMyProfile)
 	clinicPortal.Put("/profile", clinicPortalHandler.UpdateMyProfile)
 	clinicPortal.Get("/dashboard", clinicPortalHandler.GetDashboardStats)
+	clinicPortal.Get("/dashboard/content", dashboardAnalyticsHandler.GetClinicDashboard) // Comprehensive analytics
 	clinicPortal.Get("/patients", clinicPortalHandler.GetMyPatients)
 	clinicPortal.Get("/patients/:id", clinicPortalHandler.GetMyPatient)
 	clinicPortal.Get("/staff", clinicPortalHandler.GetMyStaff)
@@ -100,6 +108,8 @@ func main() {
 	staffPortal.Get("/profile", staffPortalHandler.GetMyProfile)
 	staffPortal.Put("/profile", staffPortalHandler.UpdateMyProfile)
 	staffPortal.Get("/dashboard", staffPortalHandler.GetDashboardStats)
+	staffPortal.Get("/dashboard/analytics", dashboardAnalyticsHandler.GetClinicDashboard)
+	staffPortal.Get("/dashboard/content", dashboardAnalyticsHandler.GetClinicDashboard) // Alternative route name
 
 	// Patient management (staff only)
 	staffPortal.Post("/patients", authHandler.RequirePermission(models.PermissionCreatePatient), staffPortalHandler.CreatePatient)
@@ -120,6 +130,8 @@ func main() {
 	medicalPortal.Get("/profile", medicalPortalHandler.GetMyProfile)
 	medicalPortal.Put("/profile", medicalPortalHandler.UpdateMyProfile)
 	medicalPortal.Get("/dashboard", medicalPortalHandler.GetDashboardStats)
+	medicalPortal.Get("/dashboard/analytics", dashboardAnalyticsHandler.GetClinicDashboard)
+	medicalPortal.Get("/dashboard/content", dashboardAnalyticsHandler.GetClinicDashboard) // Alternative route name
 
 	// Patient access (medical staff can view)
 	medicalPortal.Get("/patients", authHandler.RequirePermission(models.PermissionViewPatient), medicalPortalHandler.GetMyPatients)
