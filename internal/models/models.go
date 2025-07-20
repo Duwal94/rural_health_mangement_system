@@ -11,7 +11,7 @@ type User struct {
 	ID        uint           `json:"id" gorm:"primaryKey"`
 	Email     string         `json:"email" gorm:"not null;size:255;uniqueIndex" validate:"required,email"`
 	Password  string         `json:"-" gorm:"not null;size:255" validate:"required,min=8"`
-	UserType  string         `json:"user_type" gorm:"not null;size:20" validate:"required,oneof=patient clinic admin"`
+	UserType  string         `json:"user_type" gorm:"not null;size:20" validate:"required,oneof=patient clinic_staff doctor nurse admin"`
 	IsActive  bool           `json:"is_active" gorm:"default:true"`
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
@@ -20,6 +20,7 @@ type User struct {
 	// Relationships
 	PatientProfile *Patient `json:"patient_profile,omitempty" gorm:"foreignKey:UserID"`
 	ClinicProfile  *Clinic  `json:"clinic_profile,omitempty" gorm:"foreignKey:UserID"`
+	StaffProfile   *Staff   `json:"staff_profile,omitempty" gorm:"foreignKey:UserID"`
 }
 
 type Clinic struct {
@@ -62,15 +63,18 @@ type Patient struct {
 type Staff struct {
 	ID        uint           `json:"id" gorm:"primaryKey"`
 	FullName  string         `json:"full_name" gorm:"not null;size:255" validate:"required,min=2,max=255"`
-	Role      string         `json:"role" gorm:"not null;size:100" validate:"required,oneof=Doctor Nurse Administrator Pharmacist"`
+	Role      string         `json:"role" gorm:"not null;size:100" validate:"required,oneof=Doctor Nurse Clinic_Administrator Pharmacist"`
 	Phone     string         `json:"phone" gorm:"not null;size:20" validate:"required,min=10,max=20"`
 	Email     string         `json:"email" gorm:"not null;size:255;uniqueIndex" validate:"required,email"`
 	ClinicID  uint           `json:"clinic_id" gorm:"not null" validate:"required"`
+	UserID    *uint          `json:"user_id,omitempty" gorm:"index"` // Link to User for authentication
+	IsActive  bool           `json:"is_active" gorm:"default:true"`
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
 	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
 
 	// Relationships
+	User   *User   `json:"user,omitempty" gorm:"foreignKey:UserID"`
 	Clinic *Clinic `json:"clinic,omitempty" gorm:"foreignKey:ClinicID;references:ID"`
 	Visits []Visit `json:"visits,omitempty" gorm:"foreignKey:StaffID"`
 }
@@ -208,6 +212,23 @@ type RegisterClinicRequest struct {
 	District      string `json:"district" validate:"required,min=2,max=100"`
 }
 
+type RegisterStaffRequest struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required,min=8"`
+	FullName string `json:"full_name" validate:"required,min=2,max=255"`
+	Role     string `json:"role" validate:"required,oneof=Doctor Nurse Clinic_Administrator Pharmacist"`
+	Phone    string `json:"phone" validate:"required,min=10,max=20"`
+	ClinicID uint   `json:"clinic_id" validate:"required"`
+}
+
+type CreateStaffRequest struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required,min=8"`
+	FullName string `json:"full_name" validate:"required,min=2,max=255"`
+	Role     string `json:"role" validate:"required,oneof=Doctor Nurse Clinic_Administrator Pharmacist"`
+	Phone    string `json:"phone" validate:"required,min=10,max=20"`
+}
+
 type LoginRequest struct {
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required"`
@@ -225,10 +246,113 @@ type ChangePasswordRequest struct {
 }
 
 type JWTClaims struct {
-	UserID    uint   `json:"user_id"`
-	Email     string `json:"email"`
-	UserType  string `json:"user_type"`
-	PatientID *uint  `json:"patient_id,omitempty"`
-	ClinicID  *uint  `json:"clinic_id,omitempty"`
-	Exp       int64  `json:"exp"`
+	UserID    uint    `json:"user_id"`
+	Email     string  `json:"email"`
+	UserType  string  `json:"user_type"`
+	PatientID *uint   `json:"patient_id,omitempty"`
+	ClinicID  *uint   `json:"clinic_id,omitempty"`
+	StaffID   *uint   `json:"staff_id,omitempty"`
+	StaffRole *string `json:"staff_role,omitempty"`
+	Exp       int64   `json:"exp"`
+}
+
+// Role-based permissions structure
+type Permission string
+
+const (
+	// Patient Management Permissions
+	PermissionCreatePatient Permission = "create_patient"
+	PermissionUpdatePatient Permission = "update_patient"
+	PermissionViewPatient   Permission = "view_patient"
+	PermissionDeletePatient Permission = "delete_patient"
+
+	// Staff Management Permissions
+	PermissionCreateStaff Permission = "create_staff"
+	PermissionUpdateStaff Permission = "update_staff"
+	PermissionViewStaff   Permission = "view_staff"
+	PermissionDeleteStaff Permission = "delete_staff"
+
+	// Visit Management Permissions
+	PermissionCreateVisit Permission = "create_visit"
+	PermissionUpdateVisit Permission = "update_visit"
+	PermissionViewVisit   Permission = "view_visit"
+	PermissionDeleteVisit Permission = "delete_visit"
+
+	// Medical Permissions
+	PermissionCreateDiagnosis Permission = "create_diagnosis"
+	PermissionUpdateDiagnosis Permission = "update_diagnosis"
+	PermissionViewDiagnosis   Permission = "view_diagnosis"
+	PermissionDeleteDiagnosis Permission = "delete_diagnosis"
+
+	PermissionCreatePrescription Permission = "create_prescription"
+	PermissionUpdatePrescription Permission = "update_prescription"
+	PermissionViewPrescription   Permission = "view_prescription"
+	PermissionDeletePrescription Permission = "delete_prescription"
+
+	// Administrative Permissions
+	PermissionManageClinic    Permission = "manage_clinic"
+	PermissionViewReports     Permission = "view_reports"
+	PermissionManageInventory Permission = "manage_inventory"
+)
+
+// Role definitions with their permissions
+var RolePermissions = map[string][]Permission{
+	"clinic_staff": {
+		PermissionCreatePatient, PermissionUpdatePatient, PermissionViewPatient, PermissionDeletePatient,
+		PermissionCreateStaff, PermissionUpdateStaff, PermissionViewStaff, PermissionDeleteStaff,
+		PermissionCreateVisit, PermissionUpdateVisit, PermissionViewVisit, PermissionDeleteVisit,
+		PermissionViewDiagnosis, PermissionViewPrescription,
+		PermissionManageClinic, PermissionViewReports,
+	},
+	"doctor": {
+		PermissionViewPatient,
+		PermissionViewStaff,
+		PermissionCreateVisit, PermissionUpdateVisit, PermissionViewVisit,
+		PermissionCreateDiagnosis, PermissionUpdateDiagnosis, PermissionViewDiagnosis, PermissionDeleteDiagnosis,
+		PermissionCreatePrescription, PermissionUpdatePrescription, PermissionViewPrescription, PermissionDeletePrescription,
+		PermissionViewReports,
+	},
+	"nurse": {
+		PermissionViewPatient,
+		PermissionViewStaff,
+		PermissionCreateVisit, PermissionUpdateVisit, PermissionViewVisit,
+		PermissionViewDiagnosis, PermissionViewPrescription,
+	},
+}
+
+// Permission check helper function
+func HasPermission(userType string, staffRole *string, permission Permission) bool {
+	// For staff users, check their specific role permissions
+	if userType == "clinic_staff" || userType == "doctor" || userType == "nurse" {
+		var roleKey string
+		if userType == "clinic_staff" {
+			roleKey = "clinic_staff"
+		} else {
+			roleKey = userType
+		}
+
+		if permissions, exists := RolePermissions[roleKey]; exists {
+			for _, p := range permissions {
+				if p == permission {
+					return true
+				}
+			}
+		}
+	}
+
+	return false
+}
+
+// Clinic login types
+type ClinicLoginType string
+
+const (
+	ClinicLoginStaff   ClinicLoginType = "staff"
+	ClinicLoginMedical ClinicLoginType = "medical"
+)
+
+type ClinicLoginRequest struct {
+	Email     string          `json:"email" validate:"required,email"`
+	Password  string          `json:"password" validate:"required"`
+	LoginType ClinicLoginType `json:"login_type" validate:"required,oneof=staff medical"`
 }

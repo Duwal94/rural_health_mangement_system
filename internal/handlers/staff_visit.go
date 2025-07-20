@@ -99,7 +99,7 @@ func (h *StaffHandler) CreateStaff(c *fiber.Ctx) error {
 	}
 
 	// Validate role
-	validRoles := []string{"Doctor", "Nurse", "Administrator", "Pharmacist"}
+	validRoles := []string{"Doctor", "Nurse", "Clinic_Administrator", "Pharmacist"}
 	isValidRole := false
 	for _, role := range validRoles {
 		if staff.Role == role {
@@ -109,7 +109,7 @@ func (h *StaffHandler) CreateStaff(c *fiber.Ctx) error {
 	}
 	if !isValidRole {
 		return c.Status(fiber.StatusBadRequest).JSON(models.ErrorResponse{
-			Error: "Invalid role. Must be Doctor, Nurse, Administrator, or Pharmacist",
+			Error: "Invalid role. Must be Doctor, Nurse, Clinic_Administrator, or Pharmacist",
 		})
 	}
 
@@ -158,7 +158,7 @@ func (h *StaffHandler) UpdateStaff(c *fiber.Ctx) error {
 		staff.FullName = updates.FullName
 	}
 	if updates.Role != "" {
-		validRoles := []string{"Doctor", "Nurse", "Administrator", "Pharmacist"}
+		validRoles := []string{"Doctor", "Nurse", "Clinic_Administrator", "Pharmacist"}
 		isValidRole := false
 		for _, role := range validRoles {
 			if updates.Role == role {

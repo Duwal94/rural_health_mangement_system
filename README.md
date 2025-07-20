@@ -242,6 +242,44 @@ The application automatically creates the following tables with proper relations
 - Email: required, valid email, unique
 - Clinic ID: required, must exist
 
+## 🔒 Enhanced Role-Based Access Control (RBAC)
+
+The system now features a comprehensive role-based access control system with separate login portals and granular permissions:
+
+### User Types & Access Levels
+
+1. **Clinic Staff** (`clinic_staff`)
+   - Administrative control over clinic operations
+   - Can create and manage all staff types
+   - Full patient management capabilities
+   - Access via Staff Portal (`/portal/staff/*`)
+
+2. **Doctors** (`doctor`)
+   - Medical practice focused
+   - Can create diagnoses and prescriptions
+   - Read-only access to patients and staff
+   - Access via Medical Portal (`/portal/medical/*`)
+
+3. **Nurses** (`nurse`)
+   - Medical support role
+   - Can assist with visits but cannot diagnose
+   - Read-only access to patients and staff
+   - Access via Medical Portal (`/portal/medical/*`)
+
+4. **Patients** (`patient`)
+   - Can only access their own medical data
+   - Access via Patient Portal (`/portal/patient/*`)
+
+### Login System
+
+- **Standard Login** (`/auth/login`): For patients
+- **Clinic Login** (`/auth/clinic-login`): For clinic staff and medical personnel
+  - `login_type: "staff"` - For administrative staff
+  - `login_type: "medical"` - For doctors and nurses
+
+📋 **See [RBAC_SYSTEM.md](./RBAC_SYSTEM.md)** for complete role documentation
+🧪 **See [RBAC_EXAMPLES.md](./RBAC_EXAMPLES.md)** for API usage examples
+
 ## Contributing
 
 1. Follow Go best practices

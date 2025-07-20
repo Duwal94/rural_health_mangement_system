@@ -108,7 +108,7 @@ func (h *AuthHandler) RegisterPatient(c *fiber.Ctx) error {
 	tx.Commit()
 
 	// Generate JWT token
-	token, err := h.generateToken(user.ID, user.Email, user.UserType, &patient.ID, nil)
+	token, err := h.generateToken(user.ID, user.Email, user.UserType, &patient.ID, nil, nil, nil)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to generate token",
@@ -158,11 +158,11 @@ func (h *AuthHandler) RegisterClinic(c *fiber.Ctx) error {
 		}
 	}()
 
-	// Create user
+	// Create user with clinic_staff type
 	user := models.User{
 		Email:    req.Email,
 		Password: string(hashedPassword),
-		UserType: "clinic",
+		UserType: "clinic_staff",
 		IsActive: true,
 	}
 	if err := tx.Create(&user).Error; err != nil {
@@ -190,7 +190,7 @@ func (h *AuthHandler) RegisterClinic(c *fiber.Ctx) error {
 	tx.Commit()
 
 	// Generate JWT token
-	token, err := h.generateToken(user.ID, user.Email, user.UserType, nil, &clinic.ID)
+	token, err := h.generateToken(user.ID, user.Email, user.UserType, nil, &clinic.ID, nil, nil)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to generate token",
@@ -199,7 +199,7 @@ func (h *AuthHandler) RegisterClinic(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusCreated).JSON(models.LoginResponse{
 		Token:    token,
-		UserType: "clinic",
+		UserType: "clinic_staff",
 		User:     clinic,
 	})
 }
@@ -228,7 +228,8 @@ func (h *AuthHandler) Login(c *fiber.Ctx) error {
 		})
 	}
 
-	var patientID, clinicID *uint
+	var patientID, clinicID, staffID *uint
+	var staffRole *string
 	var userProfile interface{}
 
 	// Load user profile based on type
@@ -239,16 +240,24 @@ func (h *AuthHandler) Login(c *fiber.Ctx) error {
 			patientID = &patient.ID
 			userProfile = patient
 		}
-	case "clinic":
+	case "clinic_staff":
 		var clinic models.Clinic
 		if err := h.db.Where("user_id = ?", user.ID).First(&clinic).Error; err == nil {
 			clinicID = &clinic.ID
 			userProfile = clinic
 		}
+	case "doctor", "nurse":
+		var staff models.Staff
+		if err := h.db.Preload("Clinic").Where("user_id = ?", user.ID).First(&staff).Error; err == nil {
+			staffID = &staff.ID
+			staffRole = &staff.Role
+			clinicID = &staff.ClinicID
+			userProfile = staff
+		}
 	}
 
 	// Generate JWT token
-	token, err := h.generateToken(user.ID, user.Email, user.UserType, patientID, clinicID)
+	token, err := h.generateToken(user.ID, user.Email, user.UserType, patientID, clinicID, staffID, staffRole)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to generate token",
@@ -323,7 +332,7 @@ func (h *AuthHandler) GetProfile(c *fiber.Ctx) error {
 		}
 		return c.JSON(patient)
 
-	case "clinic":
+	case "clinic_admin":
 		var clinic models.Clinic
 		if err := h.db.Where("user_id = ?", userID).First(&clinic).Error; err != nil {
 			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
@@ -332,6 +341,15 @@ func (h *AuthHandler) GetProfile(c *fiber.Ctx) error {
 		}
 		return c.JSON(clinic)
 
+	case "doctor", "nurse":
+		var staff models.Staff
+		if err := h.db.Preload("Clinic").Where("user_id = ?", userID).First(&staff).Error; err != nil {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"error": "Staff profile not found",
+			})
+		}
+		return c.JSON(staff)
+
 	default:
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid user type",
@@ -339,14 +357,221 @@ func (h *AuthHandler) GetProfile(c *fiber.Ctx) error {
 	}
 }
 
+// RegisterStaff registers a new staff member with authentication (called by clinic admin)
+func (h *AuthHandler) RegisterStaff(c *fiber.Ctx) error {
+	var req models.RegisterStaffRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid request body",
+		})
+	}
+
+	// Verify requester is clinic staff and owns the clinic
+	requesterType := c.Locals("user_type").(string)
+	if requesterType != "clinic_staff" {
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+			"error": "Only clinic staff can register staff",
+		})
+	}
+
+	clinicID := c.Locals("clinic_id").(uint)
+	if req.ClinicID != clinicID {
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+			"error": "You can only register staff for your own clinic",
+		})
+	}
+
+	// Check if email already exists
+	var existingUser models.User
+	if err := h.db.Where("email = ?", req.Email).First(&existingUser).Error; err == nil {
+		return c.Status(fiber.StatusConflict).JSON(fiber.Map{
+			"error": "Email already registered",
+		})
+	}
+
+	// Check if clinic exists
+	var clinic models.Clinic
+	if err := h.db.First(&clinic, req.ClinicID).Error; err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid clinic ID",
+		})
+	}
+
+	// Hash password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to hash password",
+		})
+	}
+
+	// Determine user type based on role
+	var userType string
+	switch req.Role {
+	case "Doctor":
+		userType = "doctor"
+	case "Nurse":
+		userType = "nurse"
+	case "Clinic_Administrator", "Pharmacist":
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Clinic_Administrator and Pharmacist roles cannot have login accounts. Only Doctor and Nurse can login.",
+		})
+	default:
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid role",
+		})
+	}
+
+	// Start transaction
+	tx := h.db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	// Create user
+	user := models.User{
+		Email:    req.Email,
+		Password: string(hashedPassword),
+		UserType: userType,
+		IsActive: true,
+	}
+	if err := tx.Create(&user).Error; err != nil {
+		tx.Rollback()
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to create user",
+		})
+	}
+
+	// Create staff
+	staff := models.Staff{
+		FullName: req.FullName,
+		Role:     req.Role,
+		Phone:    req.Phone,
+		Email:    req.Email,
+		ClinicID: req.ClinicID,
+		UserID:   &user.ID,
+		IsActive: true,
+	}
+	if err := tx.Create(&staff).Error; err != nil {
+		tx.Rollback()
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to create staff",
+		})
+	}
+
+	tx.Commit()
+
+	// Generate JWT token for the new staff member
+	token, err := h.generateToken(user.ID, user.Email, user.UserType, nil, &staff.ClinicID, &staff.ID, &staff.Role)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to generate token",
+		})
+	}
+
+	// Load staff with clinic
+	h.db.Preload("Clinic").First(&staff, staff.ID)
+
+	return c.Status(fiber.StatusCreated).JSON(models.LoginResponse{
+		Token:    token,
+		UserType: userType,
+		User:     staff,
+	})
+}
+
+// ClinicLogin authenticates clinic users with specific login types
+func (h *AuthHandler) ClinicLogin(c *fiber.Ctx) error {
+	var req models.ClinicLoginRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid request body",
+		})
+	}
+
+	// Find user
+	var user models.User
+	if err := h.db.Where("email = ? AND is_active = true", req.Email).First(&user).Error; err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Invalid credentials",
+		})
+	}
+
+	// Verify password
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"error": "Invalid credentials",
+		})
+	}
+
+	// Validate login type against user type
+	switch req.LoginType {
+	case models.ClinicLoginStaff:
+		if user.UserType != "clinic_staff" {
+			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+				"error": "Invalid login type for this user",
+			})
+		}
+	case models.ClinicLoginMedical:
+		if user.UserType != "doctor" && user.UserType != "nurse" {
+			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+				"error": "Invalid login type for this user",
+			})
+		}
+	default:
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid login type",
+		})
+	}
+
+	var patientID, clinicID, staffID *uint
+	var staffRole *string
+	var userProfile interface{}
+
+	// Load user profile based on type
+	switch user.UserType {
+	case "clinic_staff":
+		var clinic models.Clinic
+		if err := h.db.Where("user_id = ?", user.ID).First(&clinic).Error; err == nil {
+			clinicID = &clinic.ID
+			userProfile = clinic
+		}
+	case "doctor", "nurse":
+		var staff models.Staff
+		if err := h.db.Preload("Clinic").Where("user_id = ?", user.ID).First(&staff).Error; err == nil {
+			staffID = &staff.ID
+			staffRole = &staff.Role
+			clinicID = &staff.ClinicID
+			userProfile = staff
+		}
+	}
+
+	// Generate JWT token
+	token, err := h.generateToken(user.ID, user.Email, user.UserType, patientID, clinicID, staffID, staffRole)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to generate token",
+		})
+	}
+
+	return c.JSON(models.LoginResponse{
+		Token:    token,
+		UserType: user.UserType,
+		User:     userProfile,
+	})
+}
+
 // generateToken creates a JWT token
-func (h *AuthHandler) generateToken(userID uint, email, userType string, patientID, clinicID *uint) (string, error) {
+func (h *AuthHandler) generateToken(userID uint, email, userType string, patientID, clinicID, staffID *uint, staffRole *string) (string, error) {
 	claims := models.JWTClaims{
 		UserID:    userID,
 		Email:     email,
 		UserType:  userType,
 		PatientID: patientID,
 		ClinicID:  clinicID,
+		StaffID:   staffID,
+		StaffRole: staffRole,
 		Exp:       time.Now().Add(24 * time.Hour).Unix(),
 	}
 
@@ -356,6 +581,8 @@ func (h *AuthHandler) generateToken(userID uint, email, userType string, patient
 		"user_type":  claims.UserType,
 		"patient_id": claims.PatientID,
 		"clinic_id":  claims.ClinicID,
+		"staff_id":   claims.StaffID,
+		"staff_role": claims.StaffRole,
 		"exp":        claims.Exp,
 	})
 
@@ -422,6 +649,14 @@ func (h *AuthHandler) AuthMiddleware(c *fiber.Ctx) error {
 		c.Locals("clinic_id", uint(clinicID.(float64)))
 	}
 
+	if staffID, ok := claims["staff_id"]; ok && staffID != nil {
+		c.Locals("staff_id", uint(staffID.(float64)))
+	}
+
+	if staffRole, ok := claims["staff_role"]; ok && staffRole != nil {
+		c.Locals("staff_role", staffRole.(string))
+	}
+
 	return c.Next()
 }
 
@@ -474,4 +709,143 @@ func (h *AuthHandler) RequireOwnership(c *fiber.Ctx) error {
 	}
 
 	return c.Next()
+}
+
+// RequireRole middleware ensures the user has one of the required roles
+func (h *AuthHandler) RequireRole(roles ...string) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		userType := c.Locals("user_type").(string)
+		staffRole, hasStaffRole := c.Locals("staff_role").(string)
+
+		for _, allowedRole := range roles {
+			if userType == allowedRole {
+				return c.Next()
+			}
+			// For staff, also check their specific role
+			if hasStaffRole && staffRole == allowedRole {
+				return c.Next()
+			}
+		}
+
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+			"error": "Insufficient permissions for this action",
+		})
+	}
+}
+
+// RequireClinicAccess middleware ensures the user has access to clinic operations
+func (h *AuthHandler) RequireClinicAccess() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		userType := c.Locals("user_type").(string)
+
+		// Allow clinic staff, doctors, and nurses
+		allowedTypes := []string{"clinic_staff", "doctor", "nurse"}
+		for _, allowedType := range allowedTypes {
+			if userType == allowedType {
+				return c.Next()
+			}
+		}
+
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+			"error": "Access denied. Only clinic staff can access this resource",
+		})
+	}
+}
+
+// RequireDoctorAccess middleware ensures only doctors can perform medical actions
+func (h *AuthHandler) RequireDoctorAccess() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		userType := c.Locals("user_type").(string)
+
+		if userType != "doctor" {
+			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+				"error": "Access denied. Only doctors can perform this action",
+			})
+		}
+
+		return c.Next()
+	}
+}
+
+// RequireClinicStaffAccess middleware ensures only clinic staff can perform administrative actions
+func (h *AuthHandler) RequireClinicStaffAccess() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		userType := c.Locals("user_type").(string)
+
+		if userType != "clinic_staff" {
+			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+				"error": "Access denied. Only clinic staff can perform this action",
+			})
+		}
+
+		return c.Next()
+	}
+}
+
+// ValidateClinicOwnership middleware ensures users can only access data from their own clinic
+func (h *AuthHandler) ValidateClinicOwnership() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		userType := c.Locals("user_type").(string)
+		userClinicID, hasClinicID := c.Locals("clinic_id").(uint)
+
+		if !hasClinicID {
+			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+				"error": "No clinic association found",
+			})
+		}
+
+		// For clinic-related operations, ensure user belongs to the clinic
+		switch userType {
+		case "clinic_staff", "doctor", "nurse":
+			// These user types should have clinic_id in their context
+			c.Locals("validated_clinic_id", userClinicID)
+			return c.Next()
+		default:
+			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+				"error": "Access denied to clinic resources",
+			})
+		}
+	}
+}
+
+// RequirePermission middleware ensures the user has the specified permission
+func (h *AuthHandler) RequirePermission(permission models.Permission) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		userType := c.Locals("user_type").(string)
+		var staffRole *string
+
+		if role, hasRole := c.Locals("staff_role").(string); hasRole {
+			staffRole = &role
+		}
+
+		if !models.HasPermission(userType, staffRole, permission) {
+			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+				"error": "Insufficient permissions for this action",
+			})
+		}
+
+		return c.Next()
+	}
+}
+
+// RequireMultiplePermissions middleware ensures the user has at least one of the specified permissions
+func (h *AuthHandler) RequireMultiplePermissions(permissions ...models.Permission) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		userType := c.Locals("user_type").(string)
+		var staffRole *string
+
+		if role, hasRole := c.Locals("staff_role").(string); hasRole {
+			staffRole = &role
+		}
+
+		for _, permission := range permissions {
+			if models.HasPermission(userType, staffRole, permission) {
+				return c.Next()
+			}
+		}
+
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+			"error": "Insufficient permissions for this action",
+		})
+	}
 }

@@ -1,0 +1,1423 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+		"name": "Rural Health Management System - Staff Portal",
+		"description": "Complete API collection for the Staff Portal of the Rural Health Management System with Role-Based Access Control (RBAC). This collection includes authentication, patient management, staff management, and visit coordination workflows.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{staff_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Ensure base URL is set",
+					"if (!pm.environment.get('base_url')) {",
+					"    pm.environment.set('base_url', 'http://localhost:8080');",
+					"}",
+					"",
+					"// Auto-generate timestamps for requests",
+					"pm.environment.set('current_timestamp', new Date().toISOString());"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "api_version",
+			"value": "v1",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Authentication",
+			"description": "Staff authentication endpoints",
+			"item": [
+				{
+					"name": "Staff Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has token', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('token');",
+									"    pm.environment.set('staff_token', jsonData.token);",
+									"});",
+									"",
+									"pm.test('User type is clinic_staff', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.user_type).to.eql('clinic_staff');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"admin@mountainclinic.com\",\n    \"password\": \"StaffPass123!\",\n    \"login_type\": \"staff\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/{{api_version}}/auth/clinic-login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"auth",
+								"clinic-login"
+							]
+						},
+						"description": "Authenticate clinic staff member with staff portal access"
+					}
+				},
+				{
+					"name": "Verify Staff Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Has user information', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('user');",
+									"    pm.expect(jsonData.user).to.have.property('role');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{staff_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/{{api_version}}/auth/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"auth",
+								"me"
+							]
+						},
+						"description": "Verify the current staff token and get user information"
+					}
+				}
+			]
+		},
+		{
+			"name": "Staff Portal Dashboard",
+			"description": "Staff portal overview and dashboard endpoints",
+			"item": [
+				{
+					"name": "Get Staff Dashboard",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Dashboard has metrics', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('total_patients');",
+									"    pm.expect(jsonData).to.have.property('total_staff');",
+									"    pm.expect(jsonData).to.have.property('total_visits');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{staff_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/{{api_version}}/portal/staff/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"portal",
+								"staff",
+								"dashboard"
+							]
+						},
+						"description": "Get staff portal dashboard with clinic statistics"
+					}
+				}
+			]
+		},
+		{
+			"name": "Patient Management",
+			"description": "Staff portal patient management operations",
+			"item": [
+				{
+					"name": "Create New Patient",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 201', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Patient created successfully', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.environment.set('created_patient_id', jsonData.id);",
+									"});",
+									"",
+									"pm.test('Patient has correct clinic', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('clinic_id');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{staff_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"full_name\": \"John Doe\",\n    \"gender\": \"Male\",\n    \"date_of_birth\": \"1985-05-15\",\n    \"phone\": \"+1-555-0200\",\n    \"email\": \"john.doe@email.com\",\n    \"address\": \"456 Oak Street, Rural Town, ST 12345\",\n    \"emergency_contact_name\": \"Jane Doe\",\n    \"emergency_contact_phone\": \"+1-555-0201\",\n    \"password\": \"PatientPass123!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/{{api_version}}/portal/staff/patients",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"portal",
+								"staff",
+								"patients"
+							]
+						},
+						"description": "Create a new patient in the clinic"
+					}
+				},
+				{
+					"name": "Get All Patients",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response has patient list', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData).to.have.property('total');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{staff_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/{{api_version}}/portal/staff/patients?page=1&per_page=20",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"portal",
+								"staff",
+								"patients"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Retrieve all patients for the clinic with pagination"
+					}
+				},
+				{
+					"name": "Search Patients",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Search results contain query term', function () {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.length > 0) {",
+									"        const patient = jsonData.data[0];",
+									"        const searchTerm = 'John';",
+									"        pm.expect(patient.full_name.toLowerCase()).to.include(searchTerm.toLowerCase());",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{staff_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/{{api_version}}/portal/staff/patients?search=John",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"portal",
+								"staff",
+								"patients"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "John"
+								}
+							]
+						},
+						"description": "Search for patients by name or phone number"
+					}
+				},
+				{
+					"name": "Get Patient Details",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Patient details are complete', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('full_name');",
+									"    pm.expect(jsonData).to.have.property('email');",
+									"    pm.expect(jsonData).to.have.property('phone');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{staff_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/{{api_version}}/portal/staff/patients/{{created_patient_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"portal",
+								"staff",
+								"patients",
+								"{{created_patient_id}}"
+							]
+						},
+						"description": "Get detailed information for a specific patient"
+					}
+				},
+				{
+					"name": "Update Patient",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Patient updated successfully', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.phone).to.eql('+1-555-0299');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{staff_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"+1-555-0299\",\n    \"address\": \"456 Oak Street, Apt 1B, Rural Town, ST 12345\",\n    \"emergency_contact_phone\": \"+1-555-0298\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/{{api_version}}/portal/staff/patients/{{created_patient_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"portal",
+								"staff",
+								"patients",
+								"{{created_patient_id}}"
+							]
+						},
+						"description": "Update patient information"
+					}
+				}
+			]
+		},
+		{
+			"name": "Staff Management",
+			"description": "Medical staff creation and management operations",
+			"item": [
+				{
+					"name": "Create Doctor",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 201', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Doctor created successfully', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.expect(jsonData.user_type).to.eql('doctor');",
+									"    pm.environment.set('created_doctor_id', jsonData.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{staff_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"full_name\": \"Dr. Sarah Johnson\",\n    \"phone\": \"+1-555-0124\",\n    \"email\": \"dr.sarah@mountainclinic.com\",\n    \"user_type\": \"doctor\",\n    \"role\": \"Doctor\",\n    \"password\": \"DoctorPass123!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/{{api_version}}/portal/staff/staff",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"portal",
+								"staff",
+								"staff"
+							]
+						},
+						"description": "Create a new doctor in the clinic"
+					}
+				},
+				{
+					"name": "Create Nurse",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 201', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Nurse created successfully', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.expect(jsonData.user_type).to.eql('nurse');",
+									"    pm.environment.set('created_nurse_id', jsonData.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{staff_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"full_name\": \"Nurse Mary Wilson\",\n    \"phone\": \"+1-555-0125\",\n    \"email\": \"nurse.mary@mountainclinic.com\",\n    \"user_type\": \"nurse\",\n    \"role\": \"Nurse\",\n    \"password\": \"NursePass123!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/{{api_version}}/portal/staff/staff",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"portal",
+								"staff",
+								"staff"
+							]
+						},
+						"description": "Create a new nurse in the clinic"
+					}
+				},
+				{
+					"name": "Create Additional Staff",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 201', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Staff created successfully', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.expect(jsonData.user_type).to.eql('clinic_staff');",
+									"    pm.environment.set('created_staff_id', jsonData.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{staff_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"full_name\": \"Jennifer Brown\",\n    \"phone\": \"+1-555-0126\",\n    \"email\": \"jennifer@mountainclinic.com\",\n    \"user_type\": \"clinic_staff\",\n    \"role\": \"Receptionist\",\n    \"password\": \"StaffPass123!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/{{api_version}}/portal/staff/staff",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"portal",
+								"staff",
+								"staff"
+							]
+						},
+						"description": "Create additional clinic staff member"
+					}
+				},
+				{
+					"name": "Get All Staff",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Staff list contains created members', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData.data.length).to.be.greaterThan(0);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{staff_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/{{api_version}}/portal/staff/staff?page=1&per_page=20",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"portal",
+								"staff",
+								"staff"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Get all staff members in the clinic"
+					}
+				},
+				{
+					"name": "Filter Staff by Type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('All results are doctors', function () {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.length > 0) {",
+									"        jsonData.data.forEach(staff => {",
+									"            pm.expect(staff.user_type).to.eql('doctor');",
+									"        });",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{staff_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/{{api_version}}/portal/staff/staff?user_type=doctor",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"portal",
+								"staff",
+								"staff"
+							],
+							"query": [
+								{
+									"key": "user_type",
+									"value": "doctor"
+								}
+							]
+						},
+						"description": "Filter staff by user type (doctor, nurse, clinic_staff)"
+					}
+				},
+				{
+					"name": "Get Staff Details",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Staff details are complete', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('full_name');",
+									"    pm.expect(jsonData).to.have.property('user_type');",
+									"    pm.expect(jsonData).to.have.property('role');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{staff_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/{{api_version}}/portal/staff/staff/{{created_doctor_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"portal",
+								"staff",
+								"staff",
+								"{{created_doctor_id}}"
+							]
+						},
+						"description": "Get detailed information for a specific staff member"
+					}
+				},
+				{
+					"name": "Update Staff Member",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Staff updated successfully', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.phone).to.eql('+1-555-0127');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{staff_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phone\": \"+1-555-0127\",\n    \"role\": \"Senior Doctor\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/{{api_version}}/portal/staff/staff/{{created_doctor_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"portal",
+								"staff",
+								"staff",
+								"{{created_doctor_id}}"
+							]
+						},
+						"description": "Update staff member information"
+					}
+				}
+			]
+		},
+		{
+			"name": "Visit Management",
+			"description": "Patient visit creation and management",
+			"item": [
+				{
+					"name": "Create Patient Visit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 201', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Visit created successfully', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('id');",
+									"    pm.expect(jsonData).to.have.property('patient_id');",
+									"    pm.environment.set('created_visit_id', jsonData.id);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{staff_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"patient_id\": {{created_patient_id}},\n    \"staff_id\": {{created_doctor_id}},\n    \"reason\": \"Annual physical examination\",\n    \"notes\": \"Patient presents for routine annual check-up. No acute complaints.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/{{api_version}}/portal/staff/visits",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"portal",
+								"staff",
+								"visits"
+							]
+						},
+						"description": "Create a new patient visit"
+					}
+				},
+				{
+					"name": "Get All Visits",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Visits list returned', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('data');",
+									"    pm.expect(jsonData).to.have.property('total');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{staff_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/{{api_version}}/portal/staff/visits?page=1&per_page=20",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"portal",
+								"staff",
+								"visits"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "per_page",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Get all visits for the clinic"
+					}
+				},
+				{
+					"name": "Filter Visits by Patient",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('All visits belong to specified patient', function () {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.length > 0) {",
+									"        jsonData.data.forEach(visit => {",
+									"            pm.expect(visit.patient_id).to.eql(parseInt(pm.environment.get('created_patient_id')));",
+									"        });",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{staff_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/{{api_version}}/portal/staff/visits?patient_id={{created_patient_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"portal",
+								"staff",
+								"visits"
+							],
+							"query": [
+								{
+									"key": "patient_id",
+									"value": "{{created_patient_id}}"
+								}
+							]
+						},
+						"description": "Get all visits for a specific patient"
+					}
+				},
+				{
+					"name": "Filter Visits by Staff",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('All visits belong to specified staff', function () {",
+									"    const jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.length > 0) {",
+									"        jsonData.data.forEach(visit => {",
+									"            pm.expect(visit.staff_id).to.eql(parseInt(pm.environment.get('created_doctor_id')));",
+									"        });",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{staff_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/{{api_version}}/portal/staff/visits?staff_id={{created_doctor_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"portal",
+								"staff",
+								"visits"
+							],
+							"query": [
+								{
+									"key": "staff_id",
+									"value": "{{created_doctor_id}}"
+								}
+							]
+						},
+						"description": "Get all visits for a specific staff member"
+					}
+				},
+				{
+					"name": "Get Visit Details",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Visit details are complete', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('patient');",
+									"    pm.expect(jsonData).to.have.property('staff');",
+									"    pm.expect(jsonData).to.have.property('reason');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{staff_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/{{api_version}}/portal/staff/visits/{{created_visit_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"portal",
+								"staff",
+								"visits",
+								"{{created_visit_id}}"
+							]
+						},
+						"description": "Get detailed information for a specific visit"
+					}
+				},
+				{
+					"name": "Update Visit",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Visit updated successfully', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData.notes).to.include('Updated notes');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{staff_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"reason\": \"Annual physical examination\",\n    \"notes\": \"Updated notes: Patient presents for routine annual check-up. No acute complaints. Vital signs stable. All laboratory results within normal limits.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/{{api_version}}/portal/staff/visits/{{created_visit_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"portal",
+								"staff",
+								"visits",
+								"{{created_visit_id}}"
+							]
+						},
+						"description": "Update visit information"
+					}
+				}
+			]
+		},
+		{
+			"name": "Reports and Analytics",
+			"description": "Clinic reporting and analytics endpoints",
+			"item": [
+				{
+					"name": "Monthly Visit Report",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Report contains monthly data', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('month');",
+									"    pm.expect(jsonData).to.have.property('total_visits');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{staff_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/{{api_version}}/portal/staff/reports/visits?month=2024-12",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"portal",
+								"staff",
+								"reports",
+								"visits"
+							],
+							"query": [
+								{
+									"key": "month",
+									"value": "2024-12"
+								}
+							]
+						},
+						"description": "Get monthly visit statistics"
+					}
+				},
+				{
+					"name": "Patient Statistics",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Statistics contain patient metrics', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('total_patients');",
+									"    pm.expect(jsonData).to.have.property('new_patients_this_month');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{staff_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/{{api_version}}/portal/staff/reports/patients",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"portal",
+								"staff",
+								"reports",
+								"patients"
+							]
+						},
+						"description": "Get patient statistics and demographics"
+					}
+				}
+			]
+		},
+		{
+			"name": "Error Handling Examples",
+			"description": "Examples of error scenarios and responses",
+			"item": [
+				{
+					"name": "Unauthorized Access",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 401', function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"pm.test('Error message is appropriate', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/{{api_version}}/portal/staff/dashboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"portal",
+								"staff",
+								"dashboard"
+							]
+						},
+						"description": "Attempt to access staff portal without authentication"
+					}
+				},
+				{
+					"name": "Invalid Patient Data",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 400', function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test('Validation error returned', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{staff_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"full_name\": \"\",\n    \"email\": \"invalid-email\",\n    \"phone\": \"123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/{{api_version}}/portal/staff/patients",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"portal",
+								"staff",
+								"patients"
+							]
+						},
+						"description": "Attempt to create patient with invalid data"
+					}
+				},
+				{
+					"name": "Cross-Clinic Access Attempt",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 404 or 403', function () {",
+									"    pm.expect([403, 404]).to.include(pm.response.code);",
+									"});",
+									"",
+									"pm.test('Access denied error', function () {",
+									"    const jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('error');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{staff_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/{{api_version}}/portal/staff/patients/99999",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"{{api_version}}",
+								"portal",
+								"staff",
+								"patients",
+								"99999"
+							]
+						},
+						"description": "Attempt to access patient from different clinic"
+					}
+				}
+			]
+		}
+	]
+}

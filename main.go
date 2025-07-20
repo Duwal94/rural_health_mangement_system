@@ -7,6 +7,7 @@ import (
 	"rural_health_management_system/internal/config"
 	"rural_health_management_system/internal/database"
 	"rural_health_management_system/internal/handlers"
+	"rural_health_management_system/internal/models"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -30,7 +31,11 @@ func main() {
 	diagnosisHandler := handlers.NewDiagnosisHandler(db.DB)
 	prescriptionHandler := handlers.NewPrescriptionHandler(db.DB)
 	patientPortalHandler := handlers.NewPatientPortalHandler(db.DB)
+	// Old clinic portal handler - deprecated
 	clinicPortalHandler := handlers.NewClinicPortalHandler(db.DB)
+	// New separate portal handlers
+	staffPortalHandler := handlers.NewStaffPortalHandler(db.DB)
+	medicalPortalHandler := handlers.NewMedicalPortalHandler(db.DB)
 
 	// Create Fiber app
 	app := fiber.New(fiber.Config{
@@ -59,11 +64,13 @@ func main() {
 	auth.Post("/register/patient", authHandler.RegisterPatient)
 	auth.Post("/register/clinic", authHandler.RegisterClinic)
 	auth.Post("/login", authHandler.Login)
+	auth.Post("/clinic-login", authHandler.ClinicLogin) // New clinic-specific login
 	auth.Get("/clinics", clinicHandler.GetClinics)
 	// Protected routes - require authentication
 	protected := v1.Group("/", authHandler.AuthMiddleware)
 	protected.Post("/auth/change-password", authHandler.ChangePassword)
 	protected.Get("/auth/profile", authHandler.GetProfile)
+	protected.Post("/auth/register/staff", authHandler.RequireUserType("clinic_staff"), authHandler.RegisterStaff) // Only clinic staff can register staff
 	// Patient Portal routes (patient access only)
 	patientPortal := v1.Group("/portal/patient", authHandler.AuthMiddleware, authHandler.RequireUserType("patient"))
 	patientPortal.Get("/profile", patientPortalHandler.GetMyProfile)
@@ -73,8 +80,8 @@ func main() {
 	patientPortal.Get("/diagnoses", patientPortalHandler.GetMyDiagnoses)
 	patientPortal.Get("/prescriptions", patientPortalHandler.GetMyPrescriptions)
 
-	// Clinic Portal routes (clinic access only)
-	clinicPortal := v1.Group("/portal/clinic", authHandler.AuthMiddleware, authHandler.RequireUserType("clinic"))
+	// Clinic Portal routes (clinic access only) - DEPRECATED, use staff or medical portals
+	clinicPortal := v1.Group("/portal/clinic", authHandler.AuthMiddleware, authHandler.RequireUserType("clinic_staff"))
 	clinicPortal.Get("/profile", clinicPortalHandler.GetMyProfile)
 	clinicPortal.Put("/profile", clinicPortalHandler.UpdateMyProfile)
 	clinicPortal.Get("/dashboard", clinicPortalHandler.GetDashboardStats)
@@ -87,6 +94,54 @@ func main() {
 	clinicPortal.Post("/visits", clinicPortalHandler.CreateVisit)
 	clinicPortal.Post("/diagnoses", clinicPortalHandler.CreateDiagnosis)
 	clinicPortal.Post("/prescriptions", clinicPortalHandler.CreatePrescription)
+
+	// Staff Portal routes (clinic staff only) - NEW
+	staffPortal := v1.Group("/portal/staff", authHandler.AuthMiddleware, authHandler.RequireUserType("clinic_staff"), authHandler.ValidateClinicOwnership())
+	staffPortal.Get("/profile", staffPortalHandler.GetMyProfile)
+	staffPortal.Put("/profile", staffPortalHandler.UpdateMyProfile)
+	staffPortal.Get("/dashboard", staffPortalHandler.GetDashboardStats)
+
+	// Patient management (staff only)
+	staffPortal.Post("/patients", authHandler.RequirePermission(models.PermissionCreatePatient), staffPortalHandler.CreatePatient)
+	staffPortal.Get("/patients", authHandler.RequirePermission(models.PermissionViewPatient), staffPortalHandler.GetMyPatients)
+	staffPortal.Get("/patients/:id", authHandler.RequirePermission(models.PermissionViewPatient), staffPortalHandler.GetMyPatient)
+
+	// Staff management (staff only)
+	staffPortal.Post("/staff", authHandler.RequirePermission(models.PermissionCreateStaff), staffPortalHandler.CreateStaff)
+	staffPortal.Get("/staff", authHandler.RequirePermission(models.PermissionViewStaff), staffPortalHandler.GetMyStaff)
+
+	// Visit management (staff can create, view all)
+	staffPortal.Post("/visits", authHandler.RequirePermission(models.PermissionCreateVisit), staffPortalHandler.CreateVisit)
+	staffPortal.Get("/visits", authHandler.RequirePermission(models.PermissionViewVisit), staffPortalHandler.GetMyVisits)
+	staffPortal.Get("/visits/:id", authHandler.RequirePermission(models.PermissionViewVisit), staffPortalHandler.GetMyVisit)
+
+	// Medical Portal routes (doctors and nurses only) - NEW
+	medicalPortal := v1.Group("/portal/medical", authHandler.AuthMiddleware, authHandler.RequireUserType("doctor", "nurse"), authHandler.ValidateClinicOwnership())
+	medicalPortal.Get("/profile", medicalPortalHandler.GetMyProfile)
+	medicalPortal.Put("/profile", medicalPortalHandler.UpdateMyProfile)
+	medicalPortal.Get("/dashboard", medicalPortalHandler.GetDashboardStats)
+
+	// Patient access (medical staff can view)
+	medicalPortal.Get("/patients", authHandler.RequirePermission(models.PermissionViewPatient), medicalPortalHandler.GetMyPatients)
+	medicalPortal.Get("/patients/:id", authHandler.RequirePermission(models.PermissionViewPatient), medicalPortalHandler.GetMyPatient)
+
+	// Staff access (medical staff can view)
+	medicalPortal.Get("/staff", authHandler.RequirePermission(models.PermissionViewStaff), medicalPortalHandler.GetStaff)
+
+	// Visit management (medical staff can create, view)
+	medicalPortal.Post("/visits", authHandler.RequirePermission(models.PermissionCreateVisit), medicalPortalHandler.CreateVisit)
+	medicalPortal.Get("/visits", authHandler.RequirePermission(models.PermissionViewVisit), medicalPortalHandler.GetMyVisits)
+	medicalPortal.Get("/visits/:id", authHandler.RequirePermission(models.PermissionViewVisit), medicalPortalHandler.GetMyVisit)
+
+	// Medical actions (doctors only)
+	medicalPortal.Post("/diagnoses", authHandler.RequireDoctorAccess(), authHandler.RequirePermission(models.PermissionCreateDiagnosis), medicalPortalHandler.CreateDiagnosis)
+	medicalPortal.Post("/prescriptions", authHandler.RequireDoctorAccess(), authHandler.RequirePermission(models.PermissionCreatePrescription), medicalPortalHandler.CreatePrescription)
+
+	// Medical data access (doctors and nurses can view their own patients' data)
+	medicalPortal.Get("/diagnoses", authHandler.RequirePermission(models.PermissionViewDiagnosis), medicalPortalHandler.GetMyDiagnoses)
+	medicalPortal.Get("/diagnoses/:id", authHandler.RequirePermission(models.PermissionViewDiagnosis), medicalPortalHandler.GetMyDiagnosis)
+	medicalPortal.Get("/prescriptions", authHandler.RequirePermission(models.PermissionViewPrescription), medicalPortalHandler.GetMyPrescriptions)
+	medicalPortal.Get("/prescriptions/:id", authHandler.RequirePermission(models.PermissionViewPrescription), medicalPortalHandler.GetMyPrescription)
 
 	// Admin/System routes - require authentication and admin permissions
 	admin := v1.Group("/", authHandler.AuthMiddleware, authHandler.RequireUserType("admin"))
